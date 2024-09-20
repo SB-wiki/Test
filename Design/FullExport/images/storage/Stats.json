@@ -1,0 +1,50 @@
+
+
+
+"batches":[ { "enrolledOn": "", "batchId": "", "courseId": "", "lastAccessedOn": "", "progress": "" } ]
+
+-- In user we need to add following attribute:
+* rootOrgName: ""
+* inside organisations , we have to put "orgName" as well.
+
+
+Extra sync required at
+
+Sync all the previous courses batch with the extra mapping to user in ES--**
+Sync to user profile in ES when add user to a batch happens (with extra Information) -- This is required
+Sync to user profile in ES when remove user to a batch happens (with extra Information) -- (enroll/unenroll api )
+Sync to user profile in ES when update in consumption metrics. (Here we will be updating the progress of user and also the lastAccessedOn) (Contnet state update api)
+While creating a new batch with participants we need to update the user profile in ES with the information- 
+While updating a new batch with participants we need to update the user profile in ES with the information - (Need to take care for removal and new added both scenario.)
+
+
+
+
+
+Common structure for any Sync Job : This will be required for new Sync job as of now, later old sync job will also be updated with same Structure.
+
+
+Will create follow structure:
+
+BackgroundEventListner : This will be a background actor job that will aceept a predefine evnet structue for all the event and then call corresponding event processor to process the event.
+
+EventProcessorService :  event processor interface to process the evnet
+
+public interface EventProcessorService {
+	
+	processEvent (Object data);
+} 
+
+
+public class UserBatchEvnetProcessorServiceImpl implements EventProcessorService{
+	  
+       processEvent (Object data) {
+
+
+       }
+}
+
+
+
+
+

@@ -1,0 +1,100 @@
+[
+	{
+		"title": "Architecture",
+		"url": "architecture/",
+		"submenus": [
+			{
+				"page": "Overview",
+				"url": "architecture/overview/"
+			},
+			{
+				"page": "Design",
+				"url": "architecture/design/"
+			},
+			{
+				"page": "Views",
+				"url": "architecture/views/elementryview/",
+				"submenus": [
+					{
+						"page": "Logical View",
+						"url": "architecture/views/logical/"
+					},
+					{
+						"page": "Physical View",
+						"url": "architecture/views/physical/"
+					},
+					{
+						"page": "Conceptual View",
+						"url": "architecture/views/conceptual/"
+					},
+					{
+						"page": "Deployment View",
+						"url": "architecture/views/deployment/"
+					},
+					{
+						"page": "Use Cases",
+						"url": "architecture/usecase/"
+					}
+				]
+			}
+		]
+	},
+	{
+		"title": "Product Features",
+		"url": "features-documentation/",
+		"submenus": [
+			{
+				"page": "Login",
+				"url": "features-documentation/login/"
+			},
+			{
+				"page": "Register Organizations",
+				"url": "features-documentation/register_org/"
+			},
+			{
+				"page": "Register Users",
+				"url": "features-documentation/register_user/"
+			},
+			{
+				"page": "User Roles and Permissions",
+				"url": "features-documentation/userrolepermission/",
+				"submenus": [
+					{
+						"page": "Types of Users",
+						"url": "features-documentation/user_type/"
+					},
+					{
+						"page": "User Profile",
+						"url": "features-documentation/userprofile/"
+					},
+					{
+						"page": "Workspace",
+						"url": "features-documentation/workspace/"
+					},
+					{
+						"page": "Administrator Dashboard",
+						"url": "features-documentation/admindashboard/"
+					},
+					{
+						"page": "Lesson Plan",
+						"url": "features-documentation/lessonplan/",
+						"submenus": [
+							{
+								"page": "Course Creation",
+								"url": "features-documentation/course_creation/"
+							},
+							{
+								"page": "Batch Creation",
+								"url": "features-documentation/course_batches/"
+							},
+							{
+								"page": "Course Consumption",
+								"url": "features-documentation/course_consumption/"
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

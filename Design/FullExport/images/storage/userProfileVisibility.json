@@ -1,0 +1,176 @@
+{
+  "dynamic": false,
+  "properties": {
+    "all_fields": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower"
+        }
+      },
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer"
+    },
+    "email": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "gender": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "grade": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "identifier": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "language": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "location": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "loginId": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "phone": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "userId": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    },
+    "userName": {
+      "type": "text",
+      "fields": {
+        "raw": {
+          "type": "text",
+          "analyzer": "keylower",
+          "fielddata": true
+        }
+      },
+      "copy_to": [
+        "all_fields"
+      ],
+      "analyzer": "cs_index_analyzer",
+      "search_analyzer": "cs_search_analyzer",
+      "fielddata": true
+    }
+  }
+}

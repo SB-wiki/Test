@@ -1,0 +1,2631 @@
+            Index "public.CONSTRAINT_17-2"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ username | character varying(255) | yes  | username
+primary key, btree, for table "public.username_login_failure"
+
+                   Index "public.UK_J3RWUVD56ONTGSUHOGM184WW2-2"
+         Column          |          Type          | Key? |       Definition        
+-------------------------+------------------------+------+-------------------------
+ name                    | character varying(255) | yes  | name
+ client_realm_constraint | character varying(255) | yes  | client_realm_constraint
+unique, btree, for table "public.keycloak_role"
+
+                      Table "public.admin_event_entity"
+      Column      |          Type           | Collation | Nullable | Default 
+------------------+-------------------------+-----------+----------+---------
+ id               | character varying(36)   |           | not null | 
+ admin_event_time | bigint                  |           |          | 
+ realm_id         | character varying(255)  |           |          | 
+ operation_type   | character varying(255)  |           |          | 
+ auth_realm_id    | character varying(255)  |           |          | 
+ auth_client_id   | character varying(255)  |           |          | 
+ auth_user_id     | character varying(255)  |           |          | 
+ ip_address       | character varying(255)  |           |          | 
+ resource_path    | character varying(2550) |           |          | 
+ representation   | text                    |           |          | 
+ error            | character varying(255)  |           |          | 
+ resource_type    | character varying(64)   |           |          | 
+Indexes:
+    "constraint_admin_event_entity" PRIMARY KEY, btree (id)
+    "idx_admin_event_time" btree (realm_id, admin_event_time)
+
+                       Table "public.associated_policy"
+        Column        |         Type          | Collation | Nullable | Default 
+----------------------+-----------------------+-----------+----------+---------
+ policy_id            | character varying(36) |           | not null | 
+ associated_policy_id | character varying(36) |           | not null | 
+Indexes:
+    "constraint_farsrpap" PRIMARY KEY, btree (policy_id, associated_policy_id)
+    "idx_assoc_pol_assoc_pol_id" btree (associated_policy_id)
+Foreign-key constraints:
+    "fk_frsr5s213xcx4wnkog82ssrfy" FOREIGN KEY (associated_policy_id) REFERENCES resource_server_policy(id)
+    "fk_frsrpas14xcx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+
+                   Table "public.authentication_execution"
+       Column       |          Type          | Collation | Nullable | Default 
+--------------------+------------------------+-----------+----------+---------
+ id                 | character varying(36)  |           | not null | 
+ alias              | character varying(255) |           |          | 
+ authenticator      | character varying(36)  |           |          | 
+ realm_id           | character varying(36)  |           |          | 
+ flow_id            | character varying(36)  |           |          | 
+ requirement        | integer                |           |          | 
+ priority           | integer                |           |          | 
+ authenticator_flow | boolean                |           | not null | false
+ auth_flow_id       | character varying(36)  |           |          | 
+ auth_config        | character varying(36)  |           |          | 
+Indexes:
+    "constraint_auth_exec_pk" PRIMARY KEY, btree (id)
+    "idx_auth_exec_flow" btree (flow_id)
+    "idx_auth_exec_realm_flow" btree (realm_id, flow_id)
+Foreign-key constraints:
+    "fk_auth_exec_flow" FOREIGN KEY (flow_id) REFERENCES authentication_flow(id)
+    "fk_auth_exec_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                              Table "public.authentication_flow"
+   Column    |          Type          | Collation | Nullable |             Default             
+-------------+------------------------+-----------+----------+---------------------------------
+ id          | character varying(36)  |           | not null | 
+ alias       | character varying(255) |           |          | 
+ description | character varying(255) |           |          | 
+ realm_id    | character varying(36)  |           |          | 
+ provider_id | character varying(36)  |           | not null | 'basic-flow'::character varying
+ top_level   | boolean                |           | not null | false
+ built_in    | boolean                |           | not null | false
+Indexes:
+    "constraint_auth_flow_pk" PRIMARY KEY, btree (id)
+    "idx_auth_flow_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_auth_flow_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+Referenced by:
+    TABLE "authentication_execution" CONSTRAINT "fk_auth_exec_flow" FOREIGN KEY (flow_id) REFERENCES authentication_flow(id)
+
+                Table "public.authenticator_config"
+  Column  |          Type          | Collation | Nullable | Default 
+----------+------------------------+-----------+----------+---------
+ id       | character varying(36)  |           | not null | 
+ alias    | character varying(255) |           |          | 
+ realm_id | character varying(36)  |           |          | 
+Indexes:
+    "constraint_auth_pk" PRIMARY KEY, btree (id)
+    "idx_auth_config_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_auth_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                 Table "public.authenticator_config_entry"
+      Column      |          Type          | Collation | Nullable | Default 
+------------------+------------------------+-----------+----------+---------
+ authenticator_id | character varying(36)  |           | not null | 
+ value            | text                   |           |          | 
+ name             | character varying(255) |           | not null | 
+Indexes:
+    "constraint_auth_cfg_pk" PRIMARY KEY, btree (authenticator_id, name)
+
+                          Table "public.broker_link"
+       Column        |          Type          | Collation | Nullable | Default 
+---------------------+------------------------+-----------+----------+---------
+ identity_provider   | character varying(255) |           | not null | 
+ storage_provider_id | character varying(255) |           |          | 
+ realm_id            | character varying(36)  |           | not null | 
+ broker_user_id      | character varying(255) |           |          | 
+ broker_username     | character varying(255) |           |          | 
+ token               | text                   |           |          | 
+ user_id             | character varying(255) |           | not null | 
+Indexes:
+    "constr_broker_link_pk" PRIMARY KEY, btree (identity_provider, user_id)
+
+               Index "public.c_cli_flow_bind"
+    Column    |          Type          | Key? |  Definition  
+--------------+------------------------+------+--------------
+ client_id    | character varying(36)  | yes  | client_id
+ binding_name | character varying(255) | yes  | binding_name
+primary key, btree, for table "public.client_auth_flow_bindings"
+
+            Index "public.c_cli_scope_bind"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ client_id | character varying(255) | yes  | client_id
+ scope_id  | character varying(255) | yes  | scope_id
+primary key, btree, for table "public.client_scope_client"
+
+                                 Table "public.client"
+            Column            |          Type          | Collation | Nullable | Default 
+------------------------------+------------------------+-----------+----------+---------
+ id                           | character varying(36)  |           | not null | 
+ enabled                      | boolean                |           | not null | false
+ full_scope_allowed           | boolean                |           | not null | false
+ client_id                    | character varying(255) |           |          | 
+ not_before                   | integer                |           |          | 
+ public_client                | boolean                |           | not null | false
+ secret                       | character varying(255) |           |          | 
+ base_url                     | character varying(255) |           |          | 
+ bearer_only                  | boolean                |           | not null | false
+ management_url               | character varying(255) |           |          | 
+ surrogate_auth_required      | boolean                |           | not null | false
+ realm_id                     | character varying(36)  |           |          | 
+ protocol                     | character varying(255) |           |          | 
+ node_rereg_timeout           | integer                |           |          | 0
+ frontchannel_logout          | boolean                |           | not null | false
+ consent_required             | boolean                |           | not null | false
+ name                         | character varying(255) |           |          | 
+ service_accounts_enabled     | boolean                |           | not null | false
+ client_authenticator_type    | character varying(255) |           |          | 
+ root_url                     | character varying(255) |           |          | 
+ description                  | character varying(255) |           |          | 
+ registration_token           | character varying(255) |           |          | 
+ standard_flow_enabled        | boolean                |           | not null | true
+ implicit_flow_enabled        | boolean                |           | not null | false
+ direct_access_grants_enabled | boolean                |           | not null | false
+ always_display_in_console    | boolean                |           | not null | false
+Indexes:
+    "constraint_7" PRIMARY KEY, btree (id)
+    "uk_b71cjlbenv945rb6gcon438at" UNIQUE CONSTRAINT, btree (realm_id, client_id)
+    "idx_client_id" btree (client_id)
+Referenced by:
+    TABLE "client_attributes" CONSTRAINT "fk3c47c64beacca966" FOREIGN KEY (client_id) REFERENCES client(id)
+    TABLE "client_node_registrations" CONSTRAINT "fk4129723ba992f594" FOREIGN KEY (client_id) REFERENCES client(id)
+    TABLE "redirect_uris" CONSTRAINT "fk_1burs8pb4ouj97h5wuppahv9f" FOREIGN KEY (client_id) REFERENCES client(id)
+    TABLE "web_origins" CONSTRAINT "fk_lojpho213xcx4wnkog82ssrfy" FOREIGN KEY (client_id) REFERENCES client(id)
+    TABLE "scope_mapping" CONSTRAINT "fk_ouse064plmlr732lxjcn1q5f1" FOREIGN KEY (client_id) REFERENCES client(id)
+    TABLE "protocol_mapper" CONSTRAINT "fk_pcm_realm" FOREIGN KEY (client_id) REFERENCES client(id)
+
+                  Table "public.client_attributes"
+  Column   |          Type          | Collation | Nullable | Default 
+-----------+------------------------+-----------+----------+---------
+ client_id | character varying(36)  |           | not null | 
+ name      | character varying(255) |           | not null | 
+ value     | text                   |           |          | 
+Indexes:
+    "constraint_3c" PRIMARY KEY, btree (client_id, name)
+Foreign-key constraints:
+    "fk3c47c64beacca966" FOREIGN KEY (client_id) REFERENCES client(id)
+
+                Table "public.client_auth_flow_bindings"
+    Column    |          Type          | Collation | Nullable | Default 
+--------------+------------------------+-----------+----------+---------
+ client_id    | character varying(36)  |           | not null | 
+ flow_id      | character varying(36)  |           |          | 
+ binding_name | character varying(255) |           | not null | 
+Indexes:
+    "c_cli_flow_bind" PRIMARY KEY, btree (client_id, binding_name)
+
+                   Table "public.client_initial_access"
+     Column      |         Type          | Collation | Nullable | Default 
+-----------------+-----------------------+-----------+----------+---------
+ id              | character varying(36) |           | not null | 
+ realm_id        | character varying(36) |           | not null | 
+ timestamp       | integer               |           |          | 
+ expiration      | integer               |           |          | 
+ count           | integer               |           |          | 
+ remaining_count | integer               |           |          | 
+Indexes:
+    "cnstr_client_init_acc_pk" PRIMARY KEY, btree (id)
+    "idx_client_init_acc_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_client_init_acc_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+              Table "public.client_node_registrations"
+  Column   |          Type          | Collation | Nullable | Default 
+-----------+------------------------+-----------+----------+---------
+ client_id | character varying(36)  |           | not null | 
+ value     | integer                |           |          | 
+ name      | character varying(255) |           | not null | 
+Indexes:
+    "constraint_84" PRIMARY KEY, btree (client_id, name)
+Foreign-key constraints:
+    "fk4129723ba992f594" FOREIGN KEY (client_id) REFERENCES client(id)
+
+                      Table "public.client_scope"
+   Column    |          Type          | Collation | Nullable | Default 
+-------------+------------------------+-----------+----------+---------
+ id          | character varying(36)  |           | not null | 
+ name        | character varying(255) |           |          | 
+ realm_id    | character varying(36)  |           |          | 
+ description | character varying(255) |           |          | 
+ protocol    | character varying(255) |           |          | 
+Indexes:
+    "pk_cli_template" PRIMARY KEY, btree (id)
+    "uk_cli_scope" UNIQUE CONSTRAINT, btree (realm_id, name)
+    "idx_realm_clscope" btree (realm_id)
+Referenced by:
+    TABLE "client_scope_attributes" CONSTRAINT "fk_cl_scope_attr_scope" FOREIGN KEY (scope_id) REFERENCES client_scope(id)
+    TABLE "client_scope_role_mapping" CONSTRAINT "fk_cl_scope_rm_scope" FOREIGN KEY (scope_id) REFERENCES client_scope(id)
+    TABLE "protocol_mapper" CONSTRAINT "fk_cli_scope_mapper" FOREIGN KEY (client_scope_id) REFERENCES client_scope(id)
+
+               Table "public.client_scope_attributes"
+  Column  |          Type           | Collation | Nullable | Default 
+----------+-------------------------+-----------+----------+---------
+ scope_id | character varying(36)   |           | not null | 
+ value    | character varying(2048) |           |          | 
+ name     | character varying(255)  |           | not null | 
+Indexes:
+    "pk_cl_tmpl_attr" PRIMARY KEY, btree (scope_id, name)
+    "idx_clscope_attrs" btree (scope_id)
+Foreign-key constraints:
+    "fk_cl_scope_attr_scope" FOREIGN KEY (scope_id) REFERENCES client_scope(id)
+
+                   Table "public.client_scope_client"
+    Column     |          Type          | Collation | Nullable | Default 
+---------------+------------------------+-----------+----------+---------
+ client_id     | character varying(255) |           | not null | 
+ scope_id      | character varying(255) |           | not null | 
+ default_scope | boolean                |           | not null | false
+Indexes:
+    "c_cli_scope_bind" PRIMARY KEY, btree (client_id, scope_id)
+    "idx_cl_clscope" btree (scope_id)
+    "idx_clscope_cl" btree (client_id)
+
+             Table "public.client_scope_role_mapping"
+  Column  |         Type          | Collation | Nullable | Default 
+----------+-----------------------+-----------+----------+---------
+ scope_id | character varying(36) |           | not null | 
+ role_id  | character varying(36) |           | not null | 
+Indexes:
+    "pk_template_scope" PRIMARY KEY, btree (scope_id, role_id)
+    "idx_clscope_role" btree (scope_id)
+    "idx_role_clscope" btree (role_id)
+Foreign-key constraints:
+    "fk_cl_scope_rm_scope" FOREIGN KEY (scope_id) REFERENCES client_scope(id)
+
+                      Table "public.client_session"
+     Column     |          Type          | Collation | Nullable | Default 
+----------------+------------------------+-----------+----------+---------
+ id             | character varying(36)  |           | not null | 
+ client_id      | character varying(36)  |           |          | 
+ redirect_uri   | character varying(255) |           |          | 
+ state          | character varying(255) |           |          | 
+ timestamp      | integer                |           |          | 
+ session_id     | character varying(36)  |           |          | 
+ auth_method    | character varying(255) |           |          | 
+ realm_id       | character varying(255) |           |          | 
+ auth_user_id   | character varying(36)  |           |          | 
+ current_action | character varying(36)  |           |          | 
+Indexes:
+    "constraint_8" PRIMARY KEY, btree (id)
+    "idx_client_session_session" btree (session_id)
+Foreign-key constraints:
+    "fk_b4ao2vcvat6ukau74wbwtfqo1" FOREIGN KEY (session_id) REFERENCES user_session(id)
+Referenced by:
+    TABLE "client_session_auth_status" CONSTRAINT "auth_status_constraint" FOREIGN KEY (client_session) REFERENCES client_session(id)
+    TABLE "client_session_note" CONSTRAINT "fk5edfb00ff51c2736" FOREIGN KEY (client_session) REFERENCES client_session(id)
+    TABLE "client_session_role" CONSTRAINT "fk_11b7sgqw18i532811v7o2dv76" FOREIGN KEY (client_session) REFERENCES client_session(id)
+    TABLE "client_session_prot_mapper" CONSTRAINT "fk_33a8sgqw18i532811v7o2dk89" FOREIGN KEY (client_session) REFERENCES client_session(id)
+    TABLE "client_user_session_note" CONSTRAINT "fk_cl_usr_ses_note" FOREIGN KEY (client_session) REFERENCES client_session(id)
+
+                Table "public.client_session_auth_status"
+     Column     |         Type          | Collation | Nullable | Default 
+----------------+-----------------------+-----------+----------+---------
+ authenticator  | character varying(36) |           | not null | 
+ status         | integer               |           |          | 
+ client_session | character varying(36) |           | not null | 
+Indexes:
+    "constraint_auth_status_pk" PRIMARY KEY, btree (client_session, authenticator)
+Foreign-key constraints:
+    "auth_status_constraint" FOREIGN KEY (client_session) REFERENCES client_session(id)
+
+                    Table "public.client_session_note"
+     Column     |          Type          | Collation | Nullable | Default 
+----------------+------------------------+-----------+----------+---------
+ name           | character varying(255) |           | not null | 
+ value          | character varying(255) |           |          | 
+ client_session | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_5e" PRIMARY KEY, btree (client_session, name)
+Foreign-key constraints:
+    "fk5edfb00ff51c2736" FOREIGN KEY (client_session) REFERENCES client_session(id)
+
+                  Table "public.client_session_prot_mapper"
+       Column       |         Type          | Collation | Nullable | Default 
+--------------------+-----------------------+-----------+----------+---------
+ protocol_mapper_id | character varying(36) |           | not null | 
+ client_session     | character varying(36) |           | not null | 
+Indexes:
+    "constraint_cs_pmp_pk" PRIMARY KEY, btree (client_session, protocol_mapper_id)
+Foreign-key constraints:
+    "fk_33a8sgqw18i532811v7o2dk89" FOREIGN KEY (client_session) REFERENCES client_session(id)
+
+                    Table "public.client_session_role"
+     Column     |          Type          | Collation | Nullable | Default 
+----------------+------------------------+-----------+----------+---------
+ role_id        | character varying(255) |           | not null | 
+ client_session | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_5" PRIMARY KEY, btree (client_session, role_id)
+Foreign-key constraints:
+    "fk_11b7sgqw18i532811v7o2dv76" FOREIGN KEY (client_session) REFERENCES client_session(id)
+
+                  Table "public.client_user_session_note"
+     Column     |          Type           | Collation | Nullable | Default 
+----------------+-------------------------+-----------+----------+---------
+ name           | character varying(255)  |           | not null | 
+ value          | character varying(2048) |           |          | 
+ client_session | character varying(36)   |           | not null | 
+Indexes:
+    "constr_cl_usr_ses_note" PRIMARY KEY, btree (client_session, name)
+Foreign-key constraints:
+    "fk_cl_usr_ses_note" FOREIGN KEY (client_session) REFERENCES client_session(id)
+
+      Index "public.cnstr_client_init_acc_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.client_initial_access"
+
+                        Table "public.component"
+    Column     |          Type          | Collation | Nullable | Default 
+---------------+------------------------+-----------+----------+---------
+ id            | character varying(36)  |           | not null | 
+ name          | character varying(255) |           |          | 
+ parent_id     | character varying(36)  |           |          | 
+ provider_id   | character varying(36)  |           |          | 
+ provider_type | character varying(255) |           |          | 
+ realm_id      | character varying(36)  |           |          | 
+ sub_type      | character varying(255) |           |          | 
+Indexes:
+    "constr_component_pk" PRIMARY KEY, btree (id)
+    "idx_component_provider_type" btree (provider_type)
+    "idx_component_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_component_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+Referenced by:
+    TABLE "component_config" CONSTRAINT "fk_component_config" FOREIGN KEY (component_id) REFERENCES component(id)
+
+                     Table "public.component_config"
+    Column    |          Type           | Collation | Nullable | Default 
+--------------+-------------------------+-----------+----------+---------
+ id           | character varying(36)   |           | not null | 
+ component_id | character varying(36)   |           | not null | 
+ name         | character varying(255)  |           | not null | 
+ value        | character varying(4000) |           |          | 
+Indexes:
+    "constr_component_config_pk" PRIMARY KEY, btree (id)
+    "idx_compo_config_compo" btree (component_id)
+Foreign-key constraints:
+    "fk_component_config" FOREIGN KEY (component_id) REFERENCES component(id)
+
+                    Table "public.composite_role"
+   Column   |         Type          | Collation | Nullable | Default 
+------------+-----------------------+-----------+----------+---------
+ composite  | character varying(36) |           | not null | 
+ child_role | character varying(36) |           | not null | 
+Indexes:
+    "constraint_composite_role" PRIMARY KEY, btree (composite, child_role)
+    "idx_composite" btree (composite)
+    "idx_composite_child" btree (child_role)
+Foreign-key constraints:
+    "fk_a63wvekftu8jo1pnj81e7mce2" FOREIGN KEY (composite) REFERENCES keycloak_role(id)
+    "fk_gr7thllb9lu8q4vqa4524jjy8" FOREIGN KEY (child_role) REFERENCES keycloak_role(id)
+
+        Index "public.con_group_id_def_groups"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ group_id | character varying(36) | yes  | group_id
+unique, btree, for table "public.realm_default_groups"
+
+                 Index "public.constr_broker_link_pk"
+      Column       |          Type          | Key? |    Definition     
+-------------------+------------------------+------+-------------------
+ identity_provider | character varying(255) | yes  | identity_provider
+ user_id           | character varying(255) | yes  | user_id
+primary key, btree, for table "public.broker_link"
+
+              Index "public.constr_cl_usr_ses_note"
+     Column     |          Type          | Key? |   Definition   
+----------------+------------------------+------+----------------
+ client_session | character varying(36)  | yes  | client_session
+ name           | character varying(255) | yes  | name
+primary key, btree, for table "public.client_user_session_note"
+
+     Index "public.constr_component_config_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.component_config"
+
+         Index "public.constr_component_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.component"
+
+             Index "public.constr_fed_required_action"
+     Column      |          Type          | Key? |   Definition    
+-----------------+------------------------+------+-----------------
+ required_action | character varying(255) | yes  | required_action
+ user_id         | character varying(255) | yes  | user_id
+primary key, btree, for table "public.fed_user_required_action"
+
+       Index "public.constr_fed_user_attr_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.fed_user_attribute"
+
+     Index "public.constr_fed_user_consent_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.fed_user_consent"
+
+       Index "public.constr_fed_user_cred_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.fed_user_credential"
+
+         Index "public.constr_fed_user_group"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ group_id | character varying(36)  | yes  | group_id
+ user_id  | character varying(255) | yes  | user_id
+primary key, btree, for table "public.fed_user_group_membership"
+
+         Index "public.constr_fed_user_role"
+ Column  |          Type          | Key? | Definition 
+---------+------------------------+------+------------
+ role_id | character varying(36)  | yes  | role_id
+ user_id | character varying(255) | yes  | user_id
+primary key, btree, for table "public.fed_user_role_mapping"
+
+        Index "public.constr_federated_user"
+ Column |          Type          | Key? | Definition 
+--------+------------------------+------+------------
+ id     | character varying(255) | yes  | id
+primary key, btree, for table "public.federated_user"
+
+      Index "public.constr_realm_default_groups"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+ group_id | character varying(36) | yes  | group_id
+primary key, btree, for table "public.realm_default_groups"
+
+     Index "public.constr_realm_enabl_event_types"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ value    | character varying(255) | yes  | value
+primary key, btree, for table "public.realm_enabled_event_types"
+
+     Index "public.constr_realm_events_listeners"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ value    | character varying(255) | yes  | value
+primary key, btree, for table "public.realm_events_listeners"
+
+     Index "public.constr_realm_supported_locales"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ value    | character varying(255) | yes  | value
+primary key, btree, for table "public.realm_supported_locales"
+
+               Index "public.constraint_2b"
+   Column    |         Type          | Key? | Definition  
+-------------+-----------------------+------+-------------
+ internal_id | character varying(36) | yes  | internal_id
+primary key, btree, for table "public.identity_provider"
+
+              Index "public.constraint_3c"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ client_id | character varying(36)  | yes  | client_id
+ name      | character varying(255) | yes  | name
+primary key, btree, for table "public.client_attributes"
+
+            Index "public.constraint_4"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.event_entity"
+
+                     Index "public.constraint_40"
+      Column       |          Type          | Key? |    Definition     
+-------------------+------------------------+------+-------------------
+ identity_provider | character varying(255) | yes  | identity_provider
+ user_id           | character varying(36)  | yes  | user_id
+primary key, btree, for table "public.federated_identity"
+
+            Index "public.constraint_4a"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.realm"
+
+                   Index "public.constraint_5"
+     Column     |          Type          | Key? |   Definition   
+----------------+------------------------+------+----------------
+ client_session | character varying(36)  | yes  | client_session
+ role_id        | character varying(255) | yes  | role_id
+primary key, btree, for table "public.client_session_role"
+
+            Index "public.constraint_57"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.user_session"
+
+            Index "public.constraint_5c"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.user_federation_provider"
+
+                  Index "public.constraint_5e"
+     Column     |          Type          | Key? |   Definition   
+----------------+------------------------+------+----------------
+ client_session | character varying(36)  | yes  | client_session
+ name           | character varying(255) | yes  | name
+primary key, btree, for table "public.client_session_note"
+
+            Index "public.constraint_7"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.client"
+
+            Index "public.constraint_8"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.client_session"
+
+             Index "public.constraint_81"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ client_id | character varying(36) | yes  | client_id
+ role_id   | character varying(36) | yes  | role_id
+primary key, btree, for table "public.scope_mapping"
+
+                Index "public.constraint_84"
+     Column     |          Type          | Key? | Definition 
+----------------+------------------------+------+------------
+ application_id | character varying(36)  | yes  | client_id
+ name           | character varying(255) | yes  | name
+primary key, btree, for table "public.client_node_registrations"
+
+              Index "public.constraint_9"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ name     | character varying(255) | yes  | name
+ realm_id | character varying(36)  | yes  | realm_id
+primary key, btree, for table "public.realm_attribute"
+
+             Index "public.constraint_92"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ type     | character varying(255) | yes  | type
+primary key, btree, for table "public.realm_required_credential"
+
+            Index "public.constraint_a"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.keycloak_role"
+
+    Index "public.constraint_admin_event_entity"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.admin_event_entity"
+
+                Index "public.constraint_auth_cfg_pk"
+      Column      |          Type          | Key? |    Definition    
+------------------+------------------------+------+------------------
+ authenticator_id | character varying(36)  | yes  | authenticator_id
+ name             | character varying(255) | yes  | name
+primary key, btree, for table "public.authenticator_config_entry"
+
+       Index "public.constraint_auth_exec_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.authentication_execution"
+
+       Index "public.constraint_auth_flow_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.authentication_flow"
+
+         Index "public.constraint_auth_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.authenticator_config"
+
+            Index "public.constraint_auth_status_pk"
+     Column     |         Type          | Key? |   Definition   
+----------------+-----------------------+------+----------------
+ client_session | character varying(36) | yes  | client_session
+ authenticator  | character varying(36) | yes  | authenticator
+primary key, btree, for table "public.client_session_auth_status"
+
+             Index "public.constraint_c"
+ Column  |          Type          | Key? | Definition 
+---------+------------------------+------+------------
+ role_id | character varying(255) | yes  | role_id
+ user_id | character varying(36)  | yes  | user_id
+primary key, btree, for table "public.user_role_mapping"
+
+        Index "public.constraint_composite_role"
+   Column   |         Type          | Key? | Definition 
+------------+-----------------------+------+------------
+ composite  | character varying(36) | yes  | composite
+ child_role | character varying(36) | yes  | child_role
+primary key, btree, for table "public.composite_role"
+
+                  Index "public.constraint_cs_pmp_pk"
+       Column       |         Type          | Key? |     Definition     
+--------------------+-----------------------+------+--------------------
+ client_session     | character varying(36) | yes  | client_session
+ protocol_mapper_id | character varying(36) | yes  | protocol_mapper_id
+primary key, btree, for table "public.client_session_prot_mapper"
+
+                         Index "public.constraint_d"
+        Column        |          Type          | Key? |      Definition      
+----------------------+------------------------+------+----------------------
+ identity_provider_id | character varying(36)  | yes  | identity_provider_id
+ name                 | character varying(255) | yes  | name
+primary key, btree, for table "public.identity_provider_config"
+
+             Index "public.constraint_dpc"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ policy_id | character varying(36)  | yes  | policy_id
+ name      | character varying(255) | yes  | name
+primary key, btree, for table "public.policy_config"
+
+              Index "public.constraint_e"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ name     | character varying(255) | yes  | name
+primary key, btree, for table "public.realm_smtp_config"
+
+            Index "public.constraint_f"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.credential"
+
+                               Index "public.constraint_f9"
+           Column            |          Type          | Key? |         Definition          
+-----------------------------+------------------------+------+-----------------------------
+ user_federation_provider_id | character varying(36)  | yes  | user_federation_provider_id
+ name                        | character varying(255) | yes  | name
+primary key, btree, for table "public.user_federation_config"
+
+          Index "public.constraint_fapmt"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.resource_server_perm_ticket"
+
+          Index "public.constraint_farsr"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.resource_server_resource"
+
+          Index "public.constraint_farsrp"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.resource_server_policy"
+
+                     Index "public.constraint_farsrpap"
+        Column        |         Type          | Key? |      Definition      
+----------------------+-----------------------+------+----------------------
+ policy_id            | character varying(36) | yes  | policy_id
+ associated_policy_id | character varying(36) | yes  | associated_policy_id
+primary key, btree, for table "public.associated_policy"
+
+            Index "public.constraint_farsrpp"
+   Column    |         Type          | Key? | Definition  
+-------------+-----------------------+------+-------------
+ resource_id | character varying(36) | yes  | resource_id
+ policy_id   | character varying(36) | yes  | policy_id
+primary key, btree, for table "public.resource_policy"
+
+          Index "public.constraint_farsrs"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.resource_server_scope"
+
+            Index "public.constraint_farsrsp"
+   Column    |         Type          | Key? | Definition  
+-------------+-----------------------+------+-------------
+ resource_id | character varying(36) | yes  | resource_id
+ scope_id    | character varying(36) | yes  | scope_id
+primary key, btree, for table "public.resource_scope"
+
+          Index "public.constraint_farsrsps"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ scope_id  | character varying(36) | yes  | scope_id
+ policy_id | character varying(36) | yes  | policy_id
+primary key, btree, for table "public.scope_policy"
+
+            Index "public.constraint_fb"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.user_entity"
+
+                      Index "public.constraint_fedmapper_cfg_pm"
+          Column           |          Type          | Key? |        Definition         
+---------------------------+------------------------+------+---------------------------
+ user_federation_mapper_id | character varying(36)  | yes  | user_federation_mapper_id
+ name                      | character varying(255) | yes  | name
+primary key, btree, for table "public.user_federation_mapper_config"
+
+       Index "public.constraint_fedmapperpm"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.user_federation_mapper"
+
+           Index "public.constraint_fgrntcsnt_clsc_pm"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ user_consent_id | character varying(36) | yes  | user_consent_id
+ scope_id        | character varying(36) | yes  | scope_id
+primary key, btree, for table "public.fed_user_consent_cl_scope"
+
+            Index "public.constraint_grntcsnt_clsc_pm"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ user_consent_id | character varying(36) | yes  | user_consent_id
+ scope_id        | character varying(36) | yes  | scope_id
+primary key, btree, for table "public.user_consent_client_scope"
+
+       Index "public.constraint_grntcsnt_pm"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.user_consent"
+
+          Index "public.constraint_group"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.keycloak_group"
+
+    Index "public.constraint_group_attribute_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.group_attribute"
+
+         Index "public.constraint_group_role"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ role_id  | character varying(36) | yes  | role_id
+ group_id | character varying(36) | yes  | group_id
+primary key, btree, for table "public.group_role_mapping"
+
+           Index "public.constraint_idpm"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.identity_provider_mapper"
+
+             Index "public.constraint_idpmconfig"
+    Column     |          Type          | Key? |  Definition   
+---------------+------------------------+------+---------------
+ idp_mapper_id | character varying(36)  | yes  | idp_mapper_id
+ name          | character varying(255) | yes  | name
+primary key, btree, for table "public.idp_mapper_config"
+
+          Index "public.constraint_migmod"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.migration_model"
+
+                     Index "public.constraint_offl_cl_ses_pk3"
+         Column          |          Type          | Key? |       Definition        
+-------------------------+------------------------+------+-------------------------
+ user_session_id         | character varying(36)  | yes  | user_session_id
+ client_id               | character varying(255) | yes  | client_id
+ client_storage_provider | character varying(36)  | yes  | client_storage_provider
+ external_client_id      | character varying(255) | yes  | external_client_id
+ offline_flag            | character varying(4)   | yes  | offline_flag
+primary key, btree, for table "public.offline_client_session"
+
+            Index "public.constraint_offl_us_ses_pk2"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ user_session_id | character varying(36) | yes  | user_session_id
+ offline_flag    | character varying(4)  | yes  | offline_flag
+primary key, btree, for table "public.offline_user_session"
+
+           Index "public.constraint_pcm"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.protocol_mapper"
+
+                   Index "public.constraint_pmconfig"
+       Column       |          Type          | Key? |     Definition     
+--------------------+------------------------+------+--------------------
+ protocol_mapper_id | character varying(36)  | yes  | protocol_mapper_id
+ name               | character varying(255) | yes  | name
+primary key, btree, for table "public.protocol_mapper_config"
+
+        Index "public.constraint_redirect_uris"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ client_id | character varying(36)  | yes  | client_id
+ value     | character varying(255) | yes  | value
+primary key, btree, for table "public.redirect_uris"
+
+                Index "public.constraint_req_act_cfg_pk"
+       Column       |          Type          | Key? |     Definition     
+--------------------+------------------------+------+--------------------
+ required_action_id | character varying(36)  | yes  | required_action_id
+ name               | character varying(255) | yes  | name
+primary key, btree, for table "public.required_action_config"
+
+      Index "public.constraint_req_act_prv_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.required_action_provider"
+
+             Index "public.constraint_required_action"
+     Column      |          Type          | Key? |   Definition    
+-----------------+------------------------+------+-----------------
+ required_action | character varying(255) | yes  | required_action
+ user_id         | character varying(36)  | yes  | user_id
+primary key, btree, for table "public.user_required_action"
+
+         Index "public.constraint_resour_uris_pk"
+   Column    |          Type          | Key? | Definition  
+-------------+------------------------+------+-------------
+ resource_id | character varying(36)  | yes  | resource_id
+ value       | character varying(255) | yes  | value
+primary key, btree, for table "public.resource_uris"
+
+    Index "public.constraint_role_attribute_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.role_attribute"
+
+    Index "public.constraint_user_attribute_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.user_attribute"
+
+         Index "public.constraint_user_group"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ group_id | character varying(36) | yes  | group_id
+ user_id  | character varying(36) | yes  | user_id
+primary key, btree, for table "public.user_group_membership"
+
+              Index "public.constraint_usn_pk"
+    Column    |          Type          | Key? |  Definition  
+--------------+------------------------+------+--------------
+ user_session | character varying(36)  | yes  | user_session
+ name         | character varying(255) | yes  | name
+primary key, btree, for table "public.user_session_note"
+
+         Index "public.constraint_web_origins"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ client_id | character varying(36)  | yes  | client_id
+ value     | character varying(255) | yes  | value
+primary key, btree, for table "public.web_origins"
+
+                         Table "public.credential"
+     Column      |          Type          | Collation | Nullable | Default 
+-----------------+------------------------+-----------+----------+---------
+ id              | character varying(36)  |           | not null | 
+ salt            | bytea                  |           |          | 
+ type            | character varying(255) |           |          | 
+ user_id         | character varying(36)  |           |          | 
+ created_date    | bigint                 |           |          | 
+ user_label      | character varying(255) |           |          | 
+ secret_data     | text                   |           |          | 
+ credential_data | text                   |           |          | 
+ priority        | integer                |           |          | 
+Indexes:
+    "constraint_f" PRIMARY KEY, btree (id)
+    "idx_user_credential" btree (user_id)
+Foreign-key constraints:
+    "fk_pfyr0glasqyl0dei3kl69r6v0" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+
+                       Table "public.databasechangelog"
+    Column     |            Type             | Collation | Nullable | Default 
+---------------+-----------------------------+-----------+----------+---------
+ id            | character varying(255)      |           | not null | 
+ author        | character varying(255)      |           | not null | 
+ filename      | character varying(255)      |           | not null | 
+ dateexecuted  | timestamp without time zone |           | not null | 
+ orderexecuted | integer                     |           | not null | 
+ exectype      | character varying(10)       |           | not null | 
+ md5sum        | character varying(35)       |           |          | 
+ description   | character varying(255)      |           |          | 
+ comments      | character varying(255)      |           |          | 
+ tag           | character varying(255)      |           |          | 
+ liquibase     | character varying(20)       |           |          | 
+ contexts      | character varying(255)      |           |          | 
+ labels        | character varying(255)      |           |          | 
+ deployment_id | character varying(10)       |           |          | 
+
+                    Table "public.databasechangeloglock"
+   Column    |            Type             | Collation | Nullable | Default 
+-------------+-----------------------------+-----------+----------+---------
+ id          | integer                     |           | not null | 
+ locked      | boolean                     |           | not null | 
+ lockgranted | timestamp without time zone |           |          | 
+ lockedby    | character varying(255)      |           |          | 
+Indexes:
+    "pk_databasechangeloglock" PRIMARY KEY, btree (id)
+
+                  Table "public.default_client_scope"
+    Column     |         Type          | Collation | Nullable | Default 
+---------------+-----------------------+-----------+----------+---------
+ realm_id      | character varying(36) |           | not null | 
+ scope_id      | character varying(36) |           | not null | 
+ default_scope | boolean               |           | not null | false
+Indexes:
+    "r_def_cli_scope_bind" PRIMARY KEY, btree (realm_id, scope_id)
+    "idx_defcls_realm" btree (realm_id)
+    "idx_defcls_scope" btree (scope_id)
+Foreign-key constraints:
+    "fk_r_def_cli_scope_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                       Table "public.event_entity"
+    Column    |          Type           | Collation | Nullable | Default 
+--------------+-------------------------+-----------+----------+---------
+ id           | character varying(36)   |           | not null | 
+ client_id    | character varying(255)  |           |          | 
+ details_json | character varying(2550) |           |          | 
+ error        | character varying(255)  |           |          | 
+ ip_address   | character varying(255)  |           |          | 
+ realm_id     | character varying(255)  |           |          | 
+ session_id   | character varying(255)  |           |          | 
+ event_time   | bigint                  |           |          | 
+ type         | character varying(255)  |           |          | 
+ user_id      | character varying(255)  |           |          | 
+Indexes:
+    "constraint_4" PRIMARY KEY, btree (id)
+    "idx_event_time" btree (realm_id, event_time)
+
+                       Table "public.fed_user_attribute"
+       Column        |          Type           | Collation | Nullable | Default 
+---------------------+-------------------------+-----------+----------+---------
+ id                  | character varying(36)   |           | not null | 
+ name                | character varying(255)  |           | not null | 
+ user_id             | character varying(255)  |           | not null | 
+ realm_id            | character varying(36)   |           | not null | 
+ storage_provider_id | character varying(36)   |           |          | 
+ value               | character varying(2024) |           |          | 
+Indexes:
+    "constr_fed_user_attr_pk" PRIMARY KEY, btree (id)
+    "idx_fu_attribute" btree (user_id, realm_id, name)
+
+                          Table "public.fed_user_consent"
+         Column          |          Type          | Collation | Nullable | Default 
+-------------------------+------------------------+-----------+----------+---------
+ id                      | character varying(36)  |           | not null | 
+ client_id               | character varying(255) |           |          | 
+ user_id                 | character varying(255) |           | not null | 
+ realm_id                | character varying(36)  |           | not null | 
+ storage_provider_id     | character varying(36)  |           |          | 
+ created_date            | bigint                 |           |          | 
+ last_updated_date       | bigint                 |           |          | 
+ client_storage_provider | character varying(36)  |           |          | 
+ external_client_id      | character varying(255) |           |          | 
+Indexes:
+    "constr_fed_user_consent_pk" PRIMARY KEY, btree (id)
+    "idx_fu_cnsnt_ext" btree (user_id, client_storage_provider, external_client_id)
+    "idx_fu_consent" btree (user_id, client_id)
+    "idx_fu_consent_ru" btree (realm_id, user_id)
+
+                 Table "public.fed_user_consent_cl_scope"
+     Column      |         Type          | Collation | Nullable | Default 
+-----------------+-----------------------+-----------+----------+---------
+ user_consent_id | character varying(36) |           | not null | 
+ scope_id        | character varying(36) |           | not null | 
+Indexes:
+    "constraint_fgrntcsnt_clsc_pm" PRIMARY KEY, btree (user_consent_id, scope_id)
+
+                      Table "public.fed_user_credential"
+       Column        |          Type          | Collation | Nullable | Default 
+---------------------+------------------------+-----------+----------+---------
+ id                  | character varying(36)  |           | not null | 
+ salt                | bytea                  |           |          | 
+ type                | character varying(255) |           |          | 
+ created_date        | bigint                 |           |          | 
+ user_id             | character varying(255) |           | not null | 
+ realm_id            | character varying(36)  |           | not null | 
+ storage_provider_id | character varying(36)  |           |          | 
+ user_label          | character varying(255) |           |          | 
+ secret_data         | text                   |           |          | 
+ credential_data     | text                   |           |          | 
+ priority            | integer                |           |          | 
+Indexes:
+    "constr_fed_user_cred_pk" PRIMARY KEY, btree (id)
+    "idx_fu_credential" btree (user_id, type)
+    "idx_fu_credential_ru" btree (realm_id, user_id)
+
+                   Table "public.fed_user_group_membership"
+       Column        |          Type          | Collation | Nullable | Default 
+---------------------+------------------------+-----------+----------+---------
+ group_id            | character varying(36)  |           | not null | 
+ user_id             | character varying(255) |           | not null | 
+ realm_id            | character varying(36)  |           | not null | 
+ storage_provider_id | character varying(36)  |           |          | 
+Indexes:
+    "constr_fed_user_group" PRIMARY KEY, btree (group_id, user_id)
+    "idx_fu_group_membership" btree (user_id, group_id)
+    "idx_fu_group_membership_ru" btree (realm_id, user_id)
+
+                           Table "public.fed_user_required_action"
+       Column        |          Type          | Collation | Nullable |        Default         
+---------------------+------------------------+-----------+----------+------------------------
+ required_action     | character varying(255) |           | not null | ' '::character varying
+ user_id             | character varying(255) |           | not null | 
+ realm_id            | character varying(36)  |           | not null | 
+ storage_provider_id | character varying(36)  |           |          | 
+Indexes:
+    "constr_fed_required_action" PRIMARY KEY, btree (required_action, user_id)
+    "idx_fu_required_action" btree (user_id, required_action)
+    "idx_fu_required_action_ru" btree (realm_id, user_id)
+
+                     Table "public.fed_user_role_mapping"
+       Column        |          Type          | Collation | Nullable | Default 
+---------------------+------------------------+-----------+----------+---------
+ role_id             | character varying(36)  |           | not null | 
+ user_id             | character varying(255) |           | not null | 
+ realm_id            | character varying(36)  |           | not null | 
+ storage_provider_id | character varying(36)  |           |          | 
+Indexes:
+    "constr_fed_user_role" PRIMARY KEY, btree (role_id, user_id)
+    "idx_fu_role_mapping" btree (user_id, role_id)
+    "idx_fu_role_mapping_ru" btree (realm_id, user_id)
+
+                      Table "public.federated_identity"
+       Column       |          Type          | Collation | Nullable | Default 
+--------------------+------------------------+-----------+----------+---------
+ identity_provider  | character varying(255) |           | not null | 
+ realm_id           | character varying(36)  |           |          | 
+ federated_user_id  | character varying(255) |           |          | 
+ federated_username | character varying(255) |           |          | 
+ token              | text                   |           |          | 
+ user_id            | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_40" PRIMARY KEY, btree (identity_provider, user_id)
+    "idx_fedidentity_feduser" btree (federated_user_id)
+    "idx_fedidentity_user" btree (user_id)
+Foreign-key constraints:
+    "fk404288b92ef007a6" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+
+                         Table "public.federated_user"
+       Column        |          Type          | Collation | Nullable | Default 
+---------------------+------------------------+-----------+----------+---------
+ id                  | character varying(255) |           | not null | 
+ storage_provider_id | character varying(255) |           |          | 
+ realm_id            | character varying(36)  |           | not null | 
+Indexes:
+    "constr_federated_user" PRIMARY KEY, btree (id)
+
+                                       Table "public.group_attribute"
+  Column  |          Type          | Collation | Nullable |                     Default                      
+----------+------------------------+-----------+----------+--------------------------------------------------
+ id       | character varying(36)  |           | not null | 'sybase-needs-something-here'::character varying
+ name     | character varying(255) |           | not null | 
+ value    | character varying(255) |           |          | 
+ group_id | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_group_attribute_pk" PRIMARY KEY, btree (id)
+    "idx_group_att_by_name_value" btree (name, (value::character varying(250)))
+    "idx_group_attr_group" btree (group_id)
+Foreign-key constraints:
+    "fk_group_attribute_group" FOREIGN KEY (group_id) REFERENCES keycloak_group(id)
+
+                 Table "public.group_role_mapping"
+  Column  |         Type          | Collation | Nullable | Default 
+----------+-----------------------+-----------+----------+---------
+ role_id  | character varying(36) |           | not null | 
+ group_id | character varying(36) |           | not null | 
+Indexes:
+    "constraint_group_role" PRIMARY KEY, btree (role_id, group_id)
+    "idx_group_role_mapp_group" btree (group_id)
+Foreign-key constraints:
+    "fk_group_role_group" FOREIGN KEY (group_id) REFERENCES keycloak_group(id)
+
+                           Table "public.identity_provider"
+           Column           |          Type          | Collation | Nullable | Default 
+----------------------------+------------------------+-----------+----------+---------
+ internal_id                | character varying(36)  |           | not null | 
+ enabled                    | boolean                |           | not null | false
+ provider_alias             | character varying(255) |           |          | 
+ provider_id                | character varying(255) |           |          | 
+ store_token                | boolean                |           | not null | false
+ authenticate_by_default    | boolean                |           | not null | false
+ realm_id                   | character varying(36)  |           |          | 
+ add_token_role             | boolean                |           | not null | true
+ trust_email                | boolean                |           | not null | false
+ first_broker_login_flow_id | character varying(36)  |           |          | 
+ post_broker_login_flow_id  | character varying(36)  |           |          | 
+ provider_display_name      | character varying(255) |           |          | 
+ link_only                  | boolean                |           | not null | false
+Indexes:
+    "constraint_2b" PRIMARY KEY, btree (internal_id)
+    "uk_2daelwnibji49avxsrtuf6xj33" UNIQUE CONSTRAINT, btree (provider_alias, realm_id)
+    "idx_ident_prov_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk2b4ebc52ae5c3b34" FOREIGN KEY (realm_id) REFERENCES realm(id)
+Referenced by:
+    TABLE "identity_provider_config" CONSTRAINT "fkdc4897cf864c4e43" FOREIGN KEY (identity_provider_id) REFERENCES identity_provider(internal_id)
+
+                    Table "public.identity_provider_config"
+        Column        |          Type          | Collation | Nullable | Default 
+----------------------+------------------------+-----------+----------+---------
+ identity_provider_id | character varying(36)  |           | not null | 
+ value                | text                   |           |          | 
+ name                 | character varying(255) |           | not null | 
+Indexes:
+    "constraint_d" PRIMARY KEY, btree (identity_provider_id, name)
+Foreign-key constraints:
+    "fkdc4897cf864c4e43" FOREIGN KEY (identity_provider_id) REFERENCES identity_provider(internal_id)
+
+                  Table "public.identity_provider_mapper"
+     Column      |          Type          | Collation | Nullable | Default 
+-----------------+------------------------+-----------+----------+---------
+ id              | character varying(36)  |           | not null | 
+ name            | character varying(255) |           | not null | 
+ idp_alias       | character varying(255) |           | not null | 
+ idp_mapper_name | character varying(255) |           | not null | 
+ realm_id        | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_idpm" PRIMARY KEY, btree (id)
+    "idx_id_prov_mapp_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_idpm_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+Referenced by:
+    TABLE "idp_mapper_config" CONSTRAINT "fk_idpmconfig" FOREIGN KEY (idp_mapper_id) REFERENCES identity_provider_mapper(id)
+
+                    Table "public.idp_mapper_config"
+    Column     |          Type          | Collation | Nullable | Default 
+---------------+------------------------+-----------+----------+---------
+ idp_mapper_id | character varying(36)  |           | not null | 
+ value         | text                   |           |          | 
+ name          | character varying(255) |           | not null | 
+Indexes:
+    "constraint_idpmconfig" PRIMARY KEY, btree (idp_mapper_id, name)
+Foreign-key constraints:
+    "fk_idpmconfig" FOREIGN KEY (idp_mapper_id) REFERENCES identity_provider_mapper(id)
+
+                 Index "public.idx_admin_event_time"
+      Column      |          Type          | Key? |    Definition    
+------------------+------------------------+------+------------------
+ realm_id         | character varying(255) | yes  | realm_id
+ admin_event_time | bigint                 | yes  | admin_event_time
+btree, for table "public.admin_event_entity"
+
+                 Index "public.idx_assoc_pol_assoc_pol_id"
+        Column        |         Type          | Key? |      Definition      
+----------------------+-----------------------+------+----------------------
+ associated_policy_id | character varying(36) | yes  | associated_policy_id
+btree, for table "public.associated_policy"
+
+         Index "public.idx_auth_config_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.authenticator_config"
+
+          Index "public.idx_auth_exec_flow"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ flow_id | character varying(36) | yes  | flow_id
+btree, for table "public.authentication_execution"
+
+       Index "public.idx_auth_exec_realm_flow"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+ flow_id  | character varying(36) | yes  | flow_id
+btree, for table "public.authentication_execution"
+
+          Index "public.idx_auth_flow_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.authentication_flow"
+
+             Index "public.idx_cl_clscope"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ scope_id | character varying(255) | yes  | scope_id
+btree, for table "public.client_scope_client"
+
+              Index "public.idx_client_id"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ client_id | character varying(255) | yes  | client_id
+btree, for table "public.client"
+
+       Index "public.idx_client_init_acc_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.client_initial_access"
+
+       Index "public.idx_client_session_session"
+   Column   |         Type          | Key? | Definition 
+------------+-----------------------+------+------------
+ session_id | character varying(36) | yes  | session_id
+btree, for table "public.client_session"
+
+           Index "public.idx_clscope_attrs"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ scope_id | character varying(36) | yes  | scope_id
+btree, for table "public.client_scope_attributes"
+
+             Index "public.idx_clscope_cl"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ client_id | character varying(255) | yes  | client_id
+btree, for table "public.client_scope_client"
+
+                Index "public.idx_clscope_protmap"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ client_scope_id | character varying(36) | yes  | client_scope_id
+btree, for table "public.protocol_mapper"
+
+           Index "public.idx_clscope_role"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ scope_id | character varying(36) | yes  | scope_id
+btree, for table "public.client_scope_role_mapping"
+
+           Index "public.idx_compo_config_compo"
+    Column    |         Type          | Key? |  Definition  
+--------------+-----------------------+------+--------------
+ component_id | character varying(36) | yes  | component_id
+btree, for table "public.component_config"
+
+          Index "public.idx_component_provider_type"
+    Column     |          Type          | Key? |  Definition   
+---------------+------------------------+------+---------------
+ provider_type | character varying(255) | yes  | provider_type
+btree, for table "public.component"
+
+          Index "public.idx_component_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.component"
+
+             Index "public.idx_composite"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ composite | character varying(36) | yes  | composite
+btree, for table "public.composite_role"
+
+           Index "public.idx_composite_child"
+   Column   |         Type          | Key? | Definition 
+------------+-----------------------+------+------------
+ child_role | character varying(36) | yes  | child_role
+btree, for table "public.composite_role"
+
+           Index "public.idx_defcls_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.default_client_scope"
+
+           Index "public.idx_defcls_scope"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ scope_id | character varying(36) | yes  | scope_id
+btree, for table "public.default_client_scope"
+
+              Index "public.idx_event_time"
+   Column   |          Type          | Key? | Definition 
+------------+------------------------+------+------------
+ realm_id   | character varying(255) | yes  | realm_id
+ event_time | bigint                 | yes  | event_time
+btree, for table "public.event_entity"
+
+                Index "public.idx_fedidentity_feduser"
+      Column       |          Type          | Key? |    Definition     
+-------------------+------------------------+------+-------------------
+ federated_user_id | character varying(255) | yes  | federated_user_id
+btree, for table "public.federated_identity"
+
+         Index "public.idx_fedidentity_user"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ user_id | character varying(36) | yes  | user_id
+btree, for table "public.federated_identity"
+
+            Index "public.idx_fu_attribute"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ user_id  | character varying(255) | yes  | user_id
+ realm_id | character varying(36)  | yes  | realm_id
+ name     | character varying(255) | yes  | name
+btree, for table "public.fed_user_attribute"
+
+                          Index "public.idx_fu_cnsnt_ext"
+         Column          |          Type          | Key? |       Definition        
+-------------------------+------------------------+------+-------------------------
+ user_id                 | character varying(255) | yes  | user_id
+ client_storage_provider | character varying(36)  | yes  | client_storage_provider
+ external_client_id      | character varying(255) | yes  | external_client_id
+btree, for table "public.fed_user_consent"
+
+             Index "public.idx_fu_consent"
+  Column   |          Type          | Key? | Definition 
+-----------+------------------------+------+------------
+ user_id   | character varying(255) | yes  | user_id
+ client_id | character varying(255) | yes  | client_id
+btree, for table "public.fed_user_consent"
+
+           Index "public.idx_fu_consent_ru"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ user_id  | character varying(255) | yes  | user_id
+btree, for table "public.fed_user_consent"
+
+           Index "public.idx_fu_credential"
+ Column  |          Type          | Key? | Definition 
+---------+------------------------+------+------------
+ user_id | character varying(255) | yes  | user_id
+ type    | character varying(255) | yes  | type
+btree, for table "public.fed_user_credential"
+
+          Index "public.idx_fu_credential_ru"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ user_id  | character varying(255) | yes  | user_id
+btree, for table "public.fed_user_credential"
+
+        Index "public.idx_fu_group_membership"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ user_id  | character varying(255) | yes  | user_id
+ group_id | character varying(36)  | yes  | group_id
+btree, for table "public.fed_user_group_membership"
+
+       Index "public.idx_fu_group_membership_ru"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ user_id  | character varying(255) | yes  | user_id
+btree, for table "public.fed_user_group_membership"
+
+               Index "public.idx_fu_required_action"
+     Column      |          Type          | Key? |   Definition    
+-----------------+------------------------+------+-----------------
+ user_id         | character varying(255) | yes  | user_id
+ required_action | character varying(255) | yes  | required_action
+btree, for table "public.fed_user_required_action"
+
+       Index "public.idx_fu_required_action_ru"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ user_id  | character varying(255) | yes  | user_id
+btree, for table "public.fed_user_required_action"
+
+          Index "public.idx_fu_role_mapping"
+ Column  |          Type          | Key? | Definition 
+---------+------------------------+------+------------
+ user_id | character varying(255) | yes  | user_id
+ role_id | character varying(36)  | yes  | role_id
+btree, for table "public.fed_user_role_mapping"
+
+         Index "public.idx_fu_role_mapping_ru"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ user_id  | character varying(255) | yes  | user_id
+btree, for table "public.fed_user_role_mapping"
+
+                Index "public.idx_group_att_by_name_value"
+ Column |          Type          | Key? |           Definition            
+--------+------------------------+------+---------------------------------
+ name   | character varying(255) | yes  | name
+ value  | character varying(250) | yes  | (value::character varying(250))
+btree, for table "public.group_attribute"
+
+         Index "public.idx_group_attr_group"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ group_id | character varying(36) | yes  | group_id
+btree, for table "public.group_attribute"
+
+       Index "public.idx_group_role_mapp_group"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ group_id | character varying(36) | yes  | group_id
+btree, for table "public.group_role_mapping"
+
+        Index "public.idx_id_prov_mapp_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.identity_provider_mapper"
+
+         Index "public.idx_ident_prov_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.identity_provider"
+
+      Index "public.idx_keycloak_role_client"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ client | character varying(36) | yes  | client
+btree, for table "public.keycloak_role"
+
+       Index "public.idx_keycloak_role_realm"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ realm  | character varying(36) | yes  | realm
+btree, for table "public.keycloak_role"
+
+           Index "public.idx_offline_css_preload"
+    Column    |          Type          | Key? |  Definition  
+--------------+------------------------+------+--------------
+ client_id    | character varying(255) | yes  | client_id
+ offline_flag | character varying(4)   | yes  | offline_flag
+btree, for table "public.offline_client_session"
+
+           Index "public.idx_offline_uss_by_user"
+    Column    |          Type          | Key? |  Definition  
+--------------+------------------------+------+--------------
+ user_id      | character varying(255) | yes  | user_id
+ realm_id     | character varying(36)  | yes  | realm_id
+ offline_flag | character varying(4)   | yes  | offline_flag
+btree, for table "public.offline_user_session"
+
+            Index "public.idx_offline_uss_by_usersess"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ realm_id        | character varying(36) | yes  | realm_id
+ offline_flag    | character varying(4)  | yes  | offline_flag
+ user_session_id | character varying(36) | yes  | user_session_id
+btree, for table "public.offline_user_session"
+
+ Index "public.idx_offline_uss_createdon"
+   Column   |  Type   | Key? | Definition 
+------------+---------+------+------------
+ created_on | integer | yes  | created_on
+btree, for table "public.offline_user_session"
+
+              Index "public.idx_offline_uss_preload"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ offline_flag    | character varying(4)  | yes  | offline_flag
+ created_on      | integer               | yes  | created_on
+ user_session_id | character varying(36) | yes  | user_session_id
+btree, for table "public.offline_user_session"
+
+       Index "public.idx_protocol_mapper_client"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ client_id | character varying(36) | yes  | client_id
+btree, for table "public.protocol_mapper"
+
+         Index "public.idx_realm_attr_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.realm_attribute"
+
+           Index "public.idx_realm_clscope"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.client_scope"
+
+        Index "public.idx_realm_def_grp_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.realm_default_groups"
+
+       Index "public.idx_realm_evt_list_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.realm_events_listeners"
+
+       Index "public.idx_realm_evt_types_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.realm_enabled_event_types"
+
+                 Index "public.idx_realm_master_adm_cli"
+       Column        |         Type          | Key? |     Definition      
+---------------------+-----------------------+------+---------------------
+ master_admin_client | character varying(36) | yes  | master_admin_client
+btree, for table "public.realm"
+
+      Index "public.idx_realm_supp_local_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.realm_supported_locales"
+
+          Index "public.idx_redir_uri_client"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ client_id | character varying(36) | yes  | client_id
+btree, for table "public.redirect_uris"
+
+        Index "public.idx_req_act_prov_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.required_action_provider"
+
+         Index "public.idx_res_policy_policy"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ policy_id | character varying(36) | yes  | policy_id
+btree, for table "public.resource_policy"
+
+          Index "public.idx_res_scope_scope"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ scope_id | character varying(36) | yes  | scope_id
+btree, for table "public.resource_scope"
+
+                Index "public.idx_res_serv_pol_res_serv"
+       Column       |         Type          | Key? |     Definition     
+--------------------+-----------------------+------+--------------------
+ resource_server_id | character varying(36) | yes  | resource_server_id
+btree, for table "public.resource_server_policy"
+
+                 Index "public.idx_res_srv_res_res_srv"
+       Column       |         Type          | Key? |     Definition     
+--------------------+-----------------------+------+--------------------
+ resource_server_id | character varying(36) | yes  | resource_server_id
+btree, for table "public.resource_server_resource"
+
+                Index "public.idx_res_srv_scope_res_srv"
+       Column       |         Type          | Key? |     Definition     
+--------------------+-----------------------+------+--------------------
+ resource_server_id | character varying(36) | yes  | resource_server_id
+btree, for table "public.resource_server_scope"
+
+          Index "public.idx_role_attribute"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ role_id | character varying(36) | yes  | role_id
+btree, for table "public.role_attribute"
+
+           Index "public.idx_role_clscope"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ role_id | character varying(36) | yes  | role_id
+btree, for table "public.client_scope_role_mapping"
+
+        Index "public.idx_scope_mapping_role"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ role_id | character varying(36) | yes  | role_id
+btree, for table "public.scope_mapping"
+
+        Index "public.idx_scope_policy_policy"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ policy_id | character varying(36) | yes  | policy_id
+btree, for table "public.scope_policy"
+
+      Index "public.idx_update_time"
+   Column    |  Type  | Key? | Definition  
+-------------+--------+------+-------------
+ update_time | bigint | yes  | update_time
+btree, for table "public.migration_model"
+
+             Index "public.idx_us_sess_id_on_cl_sess"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ user_session_id | character varying(36) | yes  | user_session_id
+btree, for table "public.offline_client_session"
+
+               Index "public.idx_usconsent_clscope"
+     Column      |         Type          | Key? |   Definition    
+-----------------+-----------------------+------+-----------------
+ user_consent_id | character varying(36) | yes  | user_consent_id
+btree, for table "public.user_consent_client_scope"
+
+          Index "public.idx_user_attribute"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ user_id | character varying(36) | yes  | user_id
+btree, for table "public.user_attribute"
+
+       Index "public.idx_user_attribute_name"
+ Column |          Type          | Key? | Definition 
+--------+------------------------+------+------------
+ name   | character varying(255) | yes  | name
+ value  | character varying(255) | yes  | value
+btree, for table "public.user_attribute"
+
+           Index "public.idx_user_consent"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ user_id | character varying(36) | yes  | user_id
+btree, for table "public.user_consent"
+
+         Index "public.idx_user_credential"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ user_id | character varying(36) | yes  | user_id
+btree, for table "public.credential"
+
+            Index "public.idx_user_email"
+ Column |          Type          | Key? | Definition 
+--------+------------------------+------+------------
+ email  | character varying(255) | yes  | email
+btree, for table "public.user_entity"
+
+        Index "public.idx_user_group_mapping"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ user_id | character varying(36) | yes  | user_id
+btree, for table "public.user_group_membership"
+
+         Index "public.idx_user_reqactions"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ user_id | character varying(36) | yes  | user_id
+btree, for table "public.user_required_action"
+
+        Index "public.idx_user_role_mapping"
+ Column  |         Type          | Key? | Definition 
+---------+-----------------------+------+------------
+ user_id | character varying(36) | yes  | user_id
+btree, for table "public.user_role_mapping"
+
+                          Index "public.idx_user_service_account"
+           Column            |          Type          | Key? |         Definition          
+-----------------------------+------------------------+------+-----------------------------
+ realm_id                    | character varying(255) | yes  | realm_id
+ service_account_client_link | character varying(255) | yes  | service_account_client_link
+btree, for table "public.user_entity"
+
+                     Index "public.idx_usr_fed_map_fed_prv"
+         Column         |         Type          | Key? |       Definition       
+------------------------+-----------------------+------+------------------------
+ federation_provider_id | character varying(36) | yes  | federation_provider_id
+btree, for table "public.user_federation_mapper"
+
+         Index "public.idx_usr_fed_map_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.user_federation_mapper"
+
+         Index "public.idx_usr_fed_prv_realm"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+btree, for table "public.user_federation_provider"
+
+          Index "public.idx_web_orig_client"
+  Column   |         Type          | Key? | Definition 
+-----------+-----------------------+------+------------
+ client_id | character varying(36) | yes  | client_id
+btree, for table "public.web_origins"
+
+                       Table "public.jgroupsping"
+    Column    |          Type          | Collation | Nullable | Default 
+--------------+------------------------+-----------+----------+---------
+ own_addr     | character varying(200) |           | not null | 
+ cluster_name | character varying(200) |           | not null | 
+ ping_data    | bytea                  |           |          | 
+Indexes:
+    "jgroupsping_pkey" PRIMARY KEY, btree (own_addr, cluster_name)
+
+               Index "public.jgroupsping_pkey"
+    Column    |          Type          | Key? |  Definition  
+--------------+------------------------+------+--------------
+ own_addr     | character varying(200) | yes  | own_addr
+ cluster_name | character varying(200) | yes  | cluster_name
+primary key, btree, for table "public.jgroupsping"
+
+                     Table "public.keycloak_group"
+    Column    |          Type          | Collation | Nullable | Default 
+--------------+------------------------+-----------+----------+---------
+ id           | character varying(36)  |           | not null | 
+ name         | character varying(255) |           |          | 
+ parent_group | character varying(36)  |           | not null | 
+ realm_id     | character varying(36)  |           |          | 
+Indexes:
+    "constraint_group" PRIMARY KEY, btree (id)
+    "sibling_names" UNIQUE CONSTRAINT, btree (realm_id, parent_group, name)
+Referenced by:
+    TABLE "group_attribute" CONSTRAINT "fk_group_attribute_group" FOREIGN KEY (group_id) REFERENCES keycloak_group(id)
+    TABLE "group_role_mapping" CONSTRAINT "fk_group_role_group" FOREIGN KEY (group_id) REFERENCES keycloak_group(id)
+
+                           Table "public.keycloak_role"
+         Column          |          Type          | Collation | Nullable | Default 
+-------------------------+------------------------+-----------+----------+---------
+ id                      | character varying(36)  |           | not null | 
+ client_realm_constraint | character varying(255) |           |          | 
+ client_role             | boolean                |           | not null | false
+ description             | character varying(255) |           |          | 
+ name                    | character varying(255) |           |          | 
+ realm_id                | character varying(255) |           |          | 
+ client                  | character varying(36)  |           |          | 
+ realm                   | character varying(36)  |           |          | 
+Indexes:
+    "constraint_a" PRIMARY KEY, btree (id)
+    "UK_J3RWUVD56ONTGSUHOGM184WW2-2" UNIQUE CONSTRAINT, btree (name, client_realm_constraint)
+    "idx_keycloak_role_client" btree (client)
+    "idx_keycloak_role_realm" btree (realm)
+Foreign-key constraints:
+    "fk_6vyqfe4cn4wlq8r6kt5vdsj5c" FOREIGN KEY (realm) REFERENCES realm(id)
+Referenced by:
+    TABLE "composite_role" CONSTRAINT "fk_a63wvekftu8jo1pnj81e7mce2" FOREIGN KEY (composite) REFERENCES keycloak_role(id)
+    TABLE "composite_role" CONSTRAINT "fk_gr7thllb9lu8q4vqa4524jjy8" FOREIGN KEY (child_role) REFERENCES keycloak_role(id)
+    TABLE "role_attribute" CONSTRAINT "fk_role_attribute_id" FOREIGN KEY (role_id) REFERENCES keycloak_role(id)
+
+                    Table "public.migration_model"
+   Column    |         Type          | Collation | Nullable | Default 
+-------------+-----------------------+-----------+----------+---------
+ id          | character varying(36) |           | not null | 
+ version     | character varying(36) |           |          | 
+ update_time | bigint                |           | not null | 0
+Indexes:
+    "constraint_migmod" PRIMARY KEY, btree (id)
+    "idx_update_time" btree (update_time)
+
+                                Table "public.offline_client_session"
+         Column          |          Type          | Collation | Nullable |          Default           
+-------------------------+------------------------+-----------+----------+----------------------------
+ user_session_id         | character varying(36)  |           | not null | 
+ client_id               | character varying(255) |           | not null | 
+ offline_flag            | character varying(4)   |           | not null | 
+ timestamp               | integer                |           |          | 
+ data                    | text                   |           |          | 
+ client_storage_provider | character varying(36)  |           | not null | 'local'::character varying
+ external_client_id      | character varying(255) |           | not null | 'local'::character varying
+Indexes:
+    "constraint_offl_cl_ses_pk3" PRIMARY KEY, btree (user_session_id, client_id, client_storage_provider, external_client_id, offline_flag)
+    "idx_offline_css_preload" btree (client_id, offline_flag)
+    "idx_us_sess_id_on_cl_sess" btree (user_session_id)
+
+                      Table "public.offline_user_session"
+        Column        |          Type          | Collation | Nullable | Default 
+----------------------+------------------------+-----------+----------+---------
+ user_session_id      | character varying(36)  |           | not null | 
+ user_id              | character varying(255) |           | not null | 
+ realm_id             | character varying(36)  |           | not null | 
+ created_on           | integer                |           | not null | 
+ offline_flag         | character varying(4)   |           | not null | 
+ data                 | text                   |           |          | 
+ last_session_refresh | integer                |           | not null | 0
+Indexes:
+    "constraint_offl_us_ses_pk2" PRIMARY KEY, btree (user_session_id, offline_flag)
+    "idx_offline_uss_by_user" btree (user_id, realm_id, offline_flag)
+    "idx_offline_uss_by_usersess" btree (realm_id, offline_flag, user_session_id)
+    "idx_offline_uss_createdon" btree (created_on)
+    "idx_offline_uss_preload" btree (offline_flag, created_on, user_session_id)
+
+              Index "public.pk_cl_tmpl_attr"
+   Column    |          Type          | Key? | Definition 
+-------------+------------------------+------+------------
+ template_id | character varying(36)  | yes  | scope_id
+ name        | character varying(255) | yes  | name
+primary key, btree, for table "public.client_scope_attributes"
+
+           Index "public.pk_cli_template"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.client_scope"
+
+Index "public.pk_databasechangeloglock"
+ Column |  Type   | Key? | Definition 
+--------+---------+------+------------
+ id     | integer | yes  | id
+primary key, btree, for table "public.databasechangeloglock"
+
+         Index "public.pk_resource_server"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.resource_server"
+
+            Index "public.pk_template_scope"
+   Column    |         Type          | Key? | Definition 
+-------------+-----------------------+------+------------
+ template_id | character varying(36) | yes  | scope_id
+ role_id     | character varying(36) | yes  | role_id
+primary key, btree, for table "public.client_scope_role_mapping"
+
+                    Table "public.policy_config"
+  Column   |          Type          | Collation | Nullable | Default 
+-----------+------------------------+-----------+----------+---------
+ policy_id | character varying(36)  |           | not null | 
+ name      | character varying(255) |           | not null | 
+ value     | text                   |           |          | 
+Indexes:
+    "constraint_dpc" PRIMARY KEY, btree (policy_id, name)
+Foreign-key constraints:
+    "fkdc34197cf864c4e43" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+
+                         Table "public.protocol_mapper"
+        Column        |          Type          | Collation | Nullable | Default 
+----------------------+------------------------+-----------+----------+---------
+ id                   | character varying(36)  |           | not null | 
+ name                 | character varying(255) |           | not null | 
+ protocol             | character varying(255) |           | not null | 
+ protocol_mapper_name | character varying(255) |           | not null | 
+ client_id            | character varying(36)  |           |          | 
+ client_scope_id      | character varying(36)  |           |          | 
+Indexes:
+    "constraint_pcm" PRIMARY KEY, btree (id)
+    "idx_clscope_protmap" btree (client_scope_id)
+    "idx_protocol_mapper_client" btree (client_id)
+Foreign-key constraints:
+    "fk_cli_scope_mapper" FOREIGN KEY (client_scope_id) REFERENCES client_scope(id)
+    "fk_pcm_realm" FOREIGN KEY (client_id) REFERENCES client(id)
+Referenced by:
+    TABLE "protocol_mapper_config" CONSTRAINT "fk_pmconfig" FOREIGN KEY (protocol_mapper_id) REFERENCES protocol_mapper(id)
+
+                    Table "public.protocol_mapper_config"
+       Column       |          Type          | Collation | Nullable | Default 
+--------------------+------------------------+-----------+----------+---------
+ protocol_mapper_id | character varying(36)  |           | not null | 
+ value              | text                   |           |          | 
+ name               | character varying(255) |           | not null | 
+Indexes:
+    "constraint_pmconfig" PRIMARY KEY, btree (protocol_mapper_id, name)
+Foreign-key constraints:
+    "fk_pmconfig" FOREIGN KEY (protocol_mapper_id) REFERENCES protocol_mapper(id)
+
+         Index "public.r_def_cli_scope_bind"
+  Column  |         Type          | Key? | Definition 
+----------+-----------------------+------+------------
+ realm_id | character varying(36) | yes  | realm_id
+ scope_id | character varying(36) | yes  | scope_id
+primary key, btree, for table "public.default_client_scope"
+
+                                             Table "public.realm"
+            Column            |          Type           | Collation | Nullable |            Default            
+------------------------------+-------------------------+-----------+----------+-------------------------------
+ id                           | character varying(36)   |           | not null | 
+ access_code_lifespan         | integer                 |           |          | 
+ user_action_lifespan         | integer                 |           |          | 
+ access_token_lifespan        | integer                 |           |          | 
+ account_theme                | character varying(255)  |           |          | 
+ admin_theme                  | character varying(255)  |           |          | 
+ email_theme                  | character varying(255)  |           |          | 
+ enabled                      | boolean                 |           | not null | false
+ events_enabled               | boolean                 |           | not null | false
+ events_expiration            | bigint                  |           |          | 
+ login_theme                  | character varying(255)  |           |          | 
+ name                         | character varying(255)  |           |          | 
+ not_before                   | integer                 |           |          | 
+ password_policy              | character varying(2550) |           |          | 
+ registration_allowed         | boolean                 |           | not null | false
+ remember_me                  | boolean                 |           | not null | false
+ reset_password_allowed       | boolean                 |           | not null | false
+ social                       | boolean                 |           | not null | false
+ ssl_required                 | character varying(255)  |           |          | 
+ sso_idle_timeout             | integer                 |           |          | 
+ sso_max_lifespan             | integer                 |           |          | 
+ update_profile_on_soc_login  | boolean                 |           | not null | false
+ verify_email                 | boolean                 |           | not null | false
+ master_admin_client          | character varying(36)   |           |          | 
+ login_lifespan               | integer                 |           |          | 
+ internationalization_enabled | boolean                 |           | not null | false
+ default_locale               | character varying(255)  |           |          | 
+ reg_email_as_username        | boolean                 |           | not null | false
+ admin_events_enabled         | boolean                 |           | not null | false
+ admin_events_details_enabled | boolean                 |           | not null | false
+ edit_username_allowed        | boolean                 |           | not null | false
+ otp_policy_counter           | integer                 |           |          | 0
+ otp_policy_window            | integer                 |           |          | 1
+ otp_policy_period            | integer                 |           |          | 30
+ otp_policy_digits            | integer                 |           |          | 6
+ otp_policy_alg               | character varying(36)   |           |          | 'HmacSHA1'::character varying
+ otp_policy_type              | character varying(36)   |           |          | 'totp'::character varying
+ browser_flow                 | character varying(36)   |           |          | 
+ registration_flow            | character varying(36)   |           |          | 
+ direct_grant_flow            | character varying(36)   |           |          | 
+ reset_credentials_flow       | character varying(36)   |           |          | 
+ client_auth_flow             | character varying(36)   |           |          | 
+ offline_session_idle_timeout | integer                 |           |          | 0
+ revoke_refresh_token         | boolean                 |           | not null | false
+ access_token_life_implicit   | integer                 |           |          | 0
+ login_with_email_allowed     | boolean                 |           | not null | true
+ duplicate_emails_allowed     | boolean                 |           | not null | false
+ docker_auth_flow             | character varying(36)   |           |          | 
+ refresh_token_max_reuse      | integer                 |           |          | 0
+ allow_user_managed_access    | boolean                 |           | not null | false
+ sso_max_lifespan_remember_me | integer                 |           | not null | 0
+ sso_idle_timeout_remember_me | integer                 |           | not null | 0
+ default_role                 | character varying(255)  |           |          | 
+Indexes:
+    "constraint_4a" PRIMARY KEY, btree (id)
+    "uk_orvsdmla56612eaefiq6wl5oi" UNIQUE CONSTRAINT, btree (name)
+    "idx_realm_master_adm_cli" btree (master_admin_client)
+Referenced by:
+    TABLE "identity_provider" CONSTRAINT "fk2b4ebc52ae5c3b34" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "user_federation_provider" CONSTRAINT "fk_1fj32f6ptolw2qy60cd8n01e8" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "realm_required_credential" CONSTRAINT "fk_5hg65lybevavkqfki3kponh9v" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "keycloak_role" CONSTRAINT "fk_6vyqfe4cn4wlq8r6kt5vdsj5c" FOREIGN KEY (realm) REFERENCES realm(id)
+    TABLE "realm_smtp_config" CONSTRAINT "fk_70ej8xdxgxd0b9hh6180irr0o" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "realm_attribute" CONSTRAINT "fk_8shxd6l3e9atqukacxgpffptw" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "authentication_execution" CONSTRAINT "fk_auth_exec_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "authentication_flow" CONSTRAINT "fk_auth_flow_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "authenticator_config" CONSTRAINT "fk_auth_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "client_initial_access" CONSTRAINT "fk_client_init_acc_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "component" CONSTRAINT "fk_component_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "realm_default_groups" CONSTRAINT "fk_def_groups_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "user_federation_mapper" CONSTRAINT "fk_fedmapperpm_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "realm_enabled_event_types" CONSTRAINT "fk_h846o4h0w8epx5nwedrf5y69j" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "realm_events_listeners" CONSTRAINT "fk_h846o4h0w8epx5nxev9f5y69j" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "identity_provider_mapper" CONSTRAINT "fk_idpm_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "default_client_scope" CONSTRAINT "fk_r_def_cli_scope_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "required_action_provider" CONSTRAINT "fk_req_act_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+    TABLE "realm_supported_locales" CONSTRAINT "fk_supported_locales_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                   Table "public.realm_attribute"
+  Column  |          Type          | Collation | Nullable | Default 
+----------+------------------------+-----------+----------+---------
+ name     | character varying(255) |           | not null | 
+ realm_id | character varying(36)  |           | not null | 
+ value    | text                   |           |          | 
+Indexes:
+    "constraint_9" PRIMARY KEY, btree (name, realm_id)
+    "idx_realm_attr_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_8shxd6l3e9atqukacxgpffptw" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                Table "public.realm_default_groups"
+  Column  |         Type          | Collation | Nullable | Default 
+----------+-----------------------+-----------+----------+---------
+ realm_id | character varying(36) |           | not null | 
+ group_id | character varying(36) |           | not null | 
+Indexes:
+    "constr_realm_default_groups" PRIMARY KEY, btree (realm_id, group_id)
+    "con_group_id_def_groups" UNIQUE CONSTRAINT, btree (group_id)
+    "idx_realm_def_grp_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_def_groups_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+              Table "public.realm_enabled_event_types"
+  Column  |          Type          | Collation | Nullable | Default 
+----------+------------------------+-----------+----------+---------
+ realm_id | character varying(36)  |           | not null | 
+ value    | character varying(255) |           | not null | 
+Indexes:
+    "constr_realm_enabl_event_types" PRIMARY KEY, btree (realm_id, value)
+    "idx_realm_evt_types_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_h846o4h0w8epx5nwedrf5y69j" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+               Table "public.realm_events_listeners"
+  Column  |          Type          | Collation | Nullable | Default 
+----------+------------------------+-----------+----------+---------
+ realm_id | character varying(36)  |           | not null | 
+ value    | character varying(255) |           | not null | 
+Indexes:
+    "constr_realm_events_listeners" PRIMARY KEY, btree (realm_id, value)
+    "idx_realm_evt_list_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_h846o4h0w8epx5nxev9f5y69j" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                 Table "public.realm_localizations"
+  Column  |          Type          | Collation | Nullable | Default 
+----------+------------------------+-----------+----------+---------
+ realm_id | character varying(255) |           | not null | 
+ locale   | character varying(255) |           | not null | 
+ texts    | text                   |           | not null | 
+Indexes:
+    "realm_localizations_pkey" PRIMARY KEY, btree (realm_id, locale)
+
+        Index "public.realm_localizations_pkey"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(255) | yes  | realm_id
+ locale   | character varying(255) | yes  | locale
+primary key, btree, for table "public.realm_localizations"
+
+               Table "public.realm_required_credential"
+   Column   |          Type          | Collation | Nullable | Default 
+------------+------------------------+-----------+----------+---------
+ type       | character varying(255) |           | not null | 
+ form_label | character varying(255) |           |          | 
+ input      | boolean                |           | not null | false
+ secret     | boolean                |           | not null | false
+ realm_id   | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_92" PRIMARY KEY, btree (realm_id, type)
+Foreign-key constraints:
+    "fk_5hg65lybevavkqfki3kponh9v" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                  Table "public.realm_smtp_config"
+  Column  |          Type          | Collation | Nullable | Default 
+----------+------------------------+-----------+----------+---------
+ realm_id | character varying(36)  |           | not null | 
+ value    | character varying(255) |           |          | 
+ name     | character varying(255) |           | not null | 
+Indexes:
+    "constraint_e" PRIMARY KEY, btree (realm_id, name)
+Foreign-key constraints:
+    "fk_70ej8xdxgxd0b9hh6180irr0o" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+               Table "public.realm_supported_locales"
+  Column  |          Type          | Collation | Nullable | Default 
+----------+------------------------+-----------+----------+---------
+ realm_id | character varying(36)  |           | not null | 
+ value    | character varying(255) |           | not null | 
+Indexes:
+    "constr_realm_supported_locales" PRIMARY KEY, btree (realm_id, value)
+    "idx_realm_supp_local_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_supported_locales_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+                    Table "public.redirect_uris"
+  Column   |          Type          | Collation | Nullable | Default 
+-----------+------------------------+-----------+----------+---------
+ client_id | character varying(36)  |           | not null | 
+ value     | character varying(255) |           | not null | 
+Indexes:
+    "constraint_redirect_uris" PRIMARY KEY, btree (client_id, value)
+    "idx_redir_uri_client" btree (client_id)
+Foreign-key constraints:
+    "fk_1burs8pb4ouj97h5wuppahv9f" FOREIGN KEY (client_id) REFERENCES client(id)
+
+                    Table "public.required_action_config"
+       Column       |          Type          | Collation | Nullable | Default 
+--------------------+------------------------+-----------+----------+---------
+ required_action_id | character varying(36)  |           | not null | 
+ value              | text                   |           |          | 
+ name               | character varying(255) |           | not null | 
+Indexes:
+    "constraint_req_act_cfg_pk" PRIMARY KEY, btree (required_action_id, name)
+
+                 Table "public.required_action_provider"
+     Column     |          Type          | Collation | Nullable | Default 
+----------------+------------------------+-----------+----------+---------
+ id             | character varying(36)  |           | not null | 
+ alias          | character varying(255) |           |          | 
+ name           | character varying(255) |           |          | 
+ realm_id       | character varying(36)  |           |          | 
+ enabled        | boolean                |           | not null | false
+ default_action | boolean                |           | not null | false
+ provider_id    | character varying(255) |           |          | 
+ priority       | integer                |           |          | 
+Indexes:
+    "constraint_req_act_prv_pk" PRIMARY KEY, btree (id)
+    "idx_req_act_prov_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_req_act_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+
+             Index "public.res_attr_pk"
+ Column |         Type          | Key? | Definition 
+--------+-----------------------+------+------------
+ id     | character varying(36) | yes  | id
+primary key, btree, for table "public.resource_attribute"
+
+                                       Table "public.resource_attribute"
+   Column    |          Type          | Collation | Nullable |                     Default                      
+-------------+------------------------+-----------+----------+--------------------------------------------------
+ id          | character varying(36)  |           | not null | 'sybase-needs-something-here'::character varying
+ name        | character varying(255) |           | not null | 
+ value       | character varying(255) |           |          | 
+ resource_id | character varying(36)  |           | not null | 
+Indexes:
+    "res_attr_pk" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "fk_5hrm2vlf9ql5fu022kqepovbr" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+
+                    Table "public.resource_policy"
+   Column    |         Type          | Collation | Nullable | Default 
+-------------+-----------------------+-----------+----------+---------
+ resource_id | character varying(36) |           | not null | 
+ policy_id   | character varying(36) |           | not null | 
+Indexes:
+    "constraint_farsrpp" PRIMARY KEY, btree (resource_id, policy_id)
+    "idx_res_policy_policy" btree (policy_id)
+Foreign-key constraints:
+    "fk_frsrpos53xcx4wnkog82ssrfy" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+    "fk_frsrpp213xcx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+
+                    Table "public.resource_scope"
+   Column    |         Type          | Collation | Nullable | Default 
+-------------+-----------------------+-----------+----------+---------
+ resource_id | character varying(36) |           | not null | 
+ scope_id    | character varying(36) |           | not null | 
+Indexes:
+    "constraint_farsrsp" PRIMARY KEY, btree (resource_id, scope_id)
+    "idx_res_scope_scope" btree (scope_id)
+Foreign-key constraints:
+    "fk_frsrpos13xcx4wnkog82ssrfy" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+    "fk_frsrps213xcx4wnkog82ssrfy" FOREIGN KEY (scope_id) REFERENCES resource_server_scope(id)
+
+                        Table "public.resource_server"
+        Column        |         Type          | Collation | Nullable | Default 
+----------------------+-----------------------+-----------+----------+---------
+ id                   | character varying(36) |           | not null | 
+ allow_rs_remote_mgmt | boolean               |           | not null | false
+ policy_enforce_mode  | smallint              |           | not null | 
+ decision_strategy    | smallint              |           | not null | 1
+Indexes:
+    "pk_resource_server" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "resource_server_perm_ticket" CONSTRAINT "fk_frsrho213xcx4wnkog82sspmt" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+    TABLE "resource_server_resource" CONSTRAINT "fk_frsrho213xcx4wnkog82ssrfy" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+    TABLE "resource_server_policy" CONSTRAINT "fk_frsrpo213xcx4wnkog82ssrfy" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+    TABLE "resource_server_scope" CONSTRAINT "fk_frsrso213xcx4wnkog82ssrfy" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+
+                  Table "public.resource_server_perm_ticket"
+       Column       |          Type          | Collation | Nullable | Default 
+--------------------+------------------------+-----------+----------+---------
+ id                 | character varying(36)  |           | not null | 
+ owner              | character varying(255) |           | not null | 
+ requester          | character varying(255) |           | not null | 
+ created_timestamp  | bigint                 |           | not null | 
+ granted_timestamp  | bigint                 |           |          | 
+ resource_id        | character varying(36)  |           | not null | 
+ scope_id           | character varying(36)  |           |          | 
+ resource_server_id | character varying(36)  |           | not null | 
+ policy_id          | character varying(36)  |           |          | 
+Indexes:
+    "constraint_fapmt" PRIMARY KEY, btree (id)
+    "uk_frsr6t700s9v50bu18ws5pmt" UNIQUE CONSTRAINT, btree (owner, requester, resource_server_id, resource_id, scope_id)
+Foreign-key constraints:
+    "fk_frsrho213xcx4wnkog82sspmt" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+    "fk_frsrho213xcx4wnkog83sspmt" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+    "fk_frsrho213xcx4wnkog84sspmt" FOREIGN KEY (scope_id) REFERENCES resource_server_scope(id)
+    "fk_frsrpo2128cx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+
+                    Table "public.resource_server_policy"
+       Column       |          Type          | Collation | Nullable | Default 
+--------------------+------------------------+-----------+----------+---------
+ id                 | character varying(36)  |           | not null | 
+ name               | character varying(255) |           | not null | 
+ description        | character varying(255) |           |          | 
+ type               | character varying(255) |           | not null | 
+ decision_strategy  | smallint               |           |          | 
+ logic              | smallint               |           |          | 
+ resource_server_id | character varying(36)  |           | not null | 
+ owner              | character varying(255) |           |          | 
+Indexes:
+    "constraint_farsrp" PRIMARY KEY, btree (id)
+    "uk_frsrpt700s9v50bu18ws5ha6" UNIQUE CONSTRAINT, btree (name, resource_server_id)
+    "idx_res_serv_pol_res_serv" btree (resource_server_id)
+Foreign-key constraints:
+    "fk_frsrpo213xcx4wnkog82ssrfy" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+Referenced by:
+    TABLE "associated_policy" CONSTRAINT "fk_frsr5s213xcx4wnkog82ssrfy" FOREIGN KEY (associated_policy_id) REFERENCES resource_server_policy(id)
+    TABLE "scope_policy" CONSTRAINT "fk_frsrasp13xcx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+    TABLE "associated_policy" CONSTRAINT "fk_frsrpas14xcx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+    TABLE "resource_server_perm_ticket" CONSTRAINT "fk_frsrpo2128cx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+    TABLE "resource_policy" CONSTRAINT "fk_frsrpp213xcx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+    TABLE "policy_config" CONSTRAINT "fkdc34197cf864c4e43" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+
+                    Table "public.resource_server_resource"
+        Column        |          Type          | Collation | Nullable | Default 
+----------------------+------------------------+-----------+----------+---------
+ id                   | character varying(36)  |           | not null | 
+ name                 | character varying(255) |           | not null | 
+ type                 | character varying(255) |           |          | 
+ icon_uri             | character varying(255) |           |          | 
+ owner                | character varying(255) |           | not null | 
+ resource_server_id   | character varying(36)  |           | not null | 
+ owner_managed_access | boolean                |           | not null | false
+ display_name         | character varying(255) |           |          | 
+Indexes:
+    "constraint_farsr" PRIMARY KEY, btree (id)
+    "uk_frsr6t700s9v50bu18ws5ha6" UNIQUE CONSTRAINT, btree (name, owner, resource_server_id)
+    "idx_res_srv_res_res_srv" btree (resource_server_id)
+Foreign-key constraints:
+    "fk_frsrho213xcx4wnkog82ssrfy" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+Referenced by:
+    TABLE "resource_attribute" CONSTRAINT "fk_5hrm2vlf9ql5fu022kqepovbr" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+    TABLE "resource_server_perm_ticket" CONSTRAINT "fk_frsrho213xcx4wnkog83sspmt" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+    TABLE "resource_scope" CONSTRAINT "fk_frsrpos13xcx4wnkog82ssrfy" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+    TABLE "resource_policy" CONSTRAINT "fk_frsrpos53xcx4wnkog82ssrfy" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+    TABLE "resource_uris" CONSTRAINT "fk_resource_server_uris" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+
+                     Table "public.resource_server_scope"
+       Column       |          Type          | Collation | Nullable | Default 
+--------------------+------------------------+-----------+----------+---------
+ id                 | character varying(36)  |           | not null | 
+ name               | character varying(255) |           | not null | 
+ icon_uri           | character varying(255) |           |          | 
+ resource_server_id | character varying(36)  |           | not null | 
+ display_name       | character varying(255) |           |          | 
+Indexes:
+    "constraint_farsrs" PRIMARY KEY, btree (id)
+    "uk_frsrst700s9v50bu18ws5ha6" UNIQUE CONSTRAINT, btree (name, resource_server_id)
+    "idx_res_srv_scope_res_srv" btree (resource_server_id)
+Foreign-key constraints:
+    "fk_frsrso213xcx4wnkog82ssrfy" FOREIGN KEY (resource_server_id) REFERENCES resource_server(id)
+Referenced by:
+    TABLE "resource_server_perm_ticket" CONSTRAINT "fk_frsrho213xcx4wnkog84sspmt" FOREIGN KEY (scope_id) REFERENCES resource_server_scope(id)
+    TABLE "scope_policy" CONSTRAINT "fk_frsrpass3xcx4wnkog82ssrfy" FOREIGN KEY (scope_id) REFERENCES resource_server_scope(id)
+    TABLE "resource_scope" CONSTRAINT "fk_frsrps213xcx4wnkog82ssrfy" FOREIGN KEY (scope_id) REFERENCES resource_server_scope(id)
+
+                     Table "public.resource_uris"
+   Column    |          Type          | Collation | Nullable | Default 
+-------------+------------------------+-----------+----------+---------
+ resource_id | character varying(36)  |           | not null | 
+ value       | character varying(255) |           | not null | 
+Indexes:
+    "constraint_resour_uris_pk" PRIMARY KEY, btree (resource_id, value)
+Foreign-key constraints:
+    "fk_resource_server_uris" FOREIGN KEY (resource_id) REFERENCES resource_server_resource(id)
+
+                   Table "public.role_attribute"
+ Column  |          Type          | Collation | Nullable | Default 
+---------+------------------------+-----------+----------+---------
+ id      | character varying(36)  |           | not null | 
+ role_id | character varying(36)  |           | not null | 
+ name    | character varying(255) |           | not null | 
+ value   | character varying(255) |           |          | 
+Indexes:
+    "constraint_role_attribute_pk" PRIMARY KEY, btree (id)
+    "idx_role_attribute" btree (role_id)
+Foreign-key constraints:
+    "fk_role_attribute_id" FOREIGN KEY (role_id) REFERENCES keycloak_role(id)
+
+                    Table "public.scope_mapping"
+  Column   |         Type          | Collation | Nullable | Default 
+-----------+-----------------------+-----------+----------+---------
+ client_id | character varying(36) |           | not null | 
+ role_id   | character varying(36) |           | not null | 
+Indexes:
+    "constraint_81" PRIMARY KEY, btree (client_id, role_id)
+    "idx_scope_mapping_role" btree (role_id)
+Foreign-key constraints:
+    "fk_ouse064plmlr732lxjcn1q5f1" FOREIGN KEY (client_id) REFERENCES client(id)
+
+                    Table "public.scope_policy"
+  Column   |         Type          | Collation | Nullable | Default 
+-----------+-----------------------+-----------+----------+---------
+ scope_id  | character varying(36) |           | not null | 
+ policy_id | character varying(36) |           | not null | 
+Indexes:
+    "constraint_farsrsps" PRIMARY KEY, btree (scope_id, policy_id)
+    "idx_scope_policy_policy" btree (policy_id)
+Foreign-key constraints:
+    "fk_frsrasp13xcx4wnkog82ssrfy" FOREIGN KEY (policy_id) REFERENCES resource_server_policy(id)
+    "fk_frsrpass3xcx4wnkog82ssrfy" FOREIGN KEY (scope_id) REFERENCES resource_server_scope(id)
+
+                Index "public.sibling_names"
+    Column    |          Type          | Key? |  Definition  
+--------------+------------------------+------+--------------
+ realm_id     | character varying(36)  | yes  | realm_id
+ parent_group | character varying(36)  | yes  | parent_group
+ name         | character varying(255) | yes  | name
+unique, btree, for table "public.keycloak_group"
+
+          Index "public.uk_2daelwnibji49avxsrtuf6xj33"
+     Column     |          Type          | Key? |   Definition   
+----------------+------------------------+------+----------------
+ provider_alias | character varying(255) | yes  | provider_alias
+ realm_id       | character varying(36)  | yes  | realm_id
+unique, btree, for table "public.identity_provider"
+
+      Index "public.uk_b71cjlbenv945rb6gcon438at"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ name     | character varying(255) | yes  | client_id
+unique, btree, for table "public.client"
+
+              Index "public.uk_cli_scope"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(36)  | yes  | realm_id
+ name     | character varying(255) | yes  | name
+unique, btree, for table "public.client_scope"
+
+             Index "public.uk_dykn684sl8up1crfei6eckhd7"
+      Column      |          Type          | Key? |    Definition    
+------------------+------------------------+------+------------------
+ realm_id         | character varying(255) | yes  | realm_id
+ email_constraint | character varying(255) | yes  | email_constraint
+unique, btree, for table "public.user_entity"
+
+               Index "public.uk_frsr6t700s9v50bu18ws5ha6"
+       Column       |          Type          | Key? |     Definition     
+--------------------+------------------------+------+--------------------
+ name               | character varying(255) | yes  | name
+ owner              | character varying(255) | yes  | owner
+ resource_server_id | character varying(36)  | yes  | resource_server_id
+unique, btree, for table "public.resource_server_resource"
+
+               Index "public.uk_frsr6t700s9v50bu18ws5pmt"
+       Column       |          Type          | Key? |     Definition     
+--------------------+------------------------+------+--------------------
+ owner              | character varying(255) | yes  | owner
+ requester          | character varying(255) | yes  | requester
+ resource_server_id | character varying(36)  | yes  | resource_server_id
+ resource_id        | character varying(36)  | yes  | resource_id
+ scope_id           | character varying(36)  | yes  | scope_id
+unique, btree, for table "public.resource_server_perm_ticket"
+
+               Index "public.uk_frsrpt700s9v50bu18ws5ha6"
+       Column       |          Type          | Key? |     Definition     
+--------------------+------------------------+------+--------------------
+ name               | character varying(255) | yes  | name
+ resource_server_id | character varying(36)  | yes  | resource_server_id
+unique, btree, for table "public.resource_server_policy"
+
+               Index "public.uk_frsrst700s9v50bu18ws5ha6"
+       Column       |          Type          | Key? |     Definition     
+--------------------+------------------------+------+--------------------
+ name               | character varying(255) | yes  | name
+ resource_server_id | character varying(36)  | yes  | resource_server_id
+unique, btree, for table "public.resource_server_scope"
+
+                    Index "public.uk_jkuwuvd56ontgsuhogm8uewrt"
+         Column          |          Type          | Key? |       Definition        
+-------------------------+------------------------+------+-------------------------
+ client_id               | character varying(255) | yes  | client_id
+ client_storage_provider | character varying(36)  | yes  | client_storage_provider
+ external_client_id      | character varying(255) | yes  | external_client_id
+ user_id                 | character varying(36)  | yes  | user_id
+unique, btree, for table "public.user_consent"
+
+     Index "public.uk_orvsdmla56612eaefiq6wl5oi"
+ Column |          Type          | Key? | Definition 
+--------+------------------------+------+------------
+ name   | character varying(255) | yes  | name
+unique, btree, for table "public.realm"
+
+      Index "public.uk_ru8tt6t700s9v50bu18ws5ha6"
+  Column  |          Type          | Key? | Definition 
+----------+------------------------+------+------------
+ realm_id | character varying(255) | yes  | realm_id
+ username | character varying(255) | yes  | username
+unique, btree, for table "public.user_entity"
+
+                                       Table "public.user_attribute"
+ Column  |          Type          | Collation | Nullable |                     Default                      
+---------+------------------------+-----------+----------+--------------------------------------------------
+ name    | character varying(255) |           | not null | 
+ value   | character varying(255) |           |          | 
+ user_id | character varying(36)  |           | not null | 
+ id      | character varying(36)  |           | not null | 'sybase-needs-something-here'::character varying
+Indexes:
+    "constraint_user_attribute_pk" PRIMARY KEY, btree (id)
+    "idx_user_attribute" btree (user_id)
+    "idx_user_attribute_name" btree (name, value)
+Foreign-key constraints:
+    "fk_5hrm2vlf9ql5fu043kqepovbr" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+
+                            Table "public.user_consent"
+         Column          |          Type          | Collation | Nullable | Default 
+-------------------------+------------------------+-----------+----------+---------
+ id                      | character varying(36)  |           | not null | 
+ client_id               | character varying(255) |           |          | 
+ user_id                 | character varying(36)  |           | not null | 
+ created_date            | bigint                 |           |          | 
+ last_updated_date       | bigint                 |           |          | 
+ client_storage_provider | character varying(36)  |           |          | 
+ external_client_id      | character varying(255) |           |          | 
+Indexes:
+    "constraint_grntcsnt_pm" PRIMARY KEY, btree (id)
+    "uk_jkuwuvd56ontgsuhogm8uewrt" UNIQUE CONSTRAINT, btree (client_id, client_storage_provider, external_client_id, user_id)
+    "idx_user_consent" btree (user_id)
+Foreign-key constraints:
+    "fk_grntcsnt_user" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+Referenced by:
+    TABLE "user_consent_client_scope" CONSTRAINT "fk_grntcsnt_clsc_usc" FOREIGN KEY (user_consent_id) REFERENCES user_consent(id)
+
+                 Table "public.user_consent_client_scope"
+     Column      |         Type          | Collation | Nullable | Default 
+-----------------+-----------------------+-----------+----------+---------
+ user_consent_id | character varying(36) |           | not null | 
+ scope_id        | character varying(36) |           | not null | 
+Indexes:
+    "constraint_grntcsnt_clsc_pm" PRIMARY KEY, btree (user_consent_id, scope_id)
+    "idx_usconsent_clscope" btree (user_consent_id)
+Foreign-key constraints:
+    "fk_grntcsnt_clsc_usc" FOREIGN KEY (user_consent_id) REFERENCES user_consent(id)
+
+                              Table "public.user_entity"
+           Column            |          Type          | Collation | Nullable | Default 
+-----------------------------+------------------------+-----------+----------+---------
+ id                          | character varying(36)  |           | not null | 
+ email                       | character varying(255) |           |          | 
+ email_constraint            | character varying(255) |           |          | 
+ email_verified              | boolean                |           | not null | false
+ enabled                     | boolean                |           | not null | false
+ federation_link             | character varying(255) |           |          | 
+ first_name                  | character varying(255) |           |          | 
+ last_name                   | character varying(255) |           |          | 
+ realm_id                    | character varying(255) |           |          | 
+ username                    | character varying(255) |           |          | 
+ created_timestamp           | bigint                 |           |          | 
+ service_account_client_link | character varying(255) |           |          | 
+ not_before                  | integer                |           | not null | 0
+Indexes:
+    "constraint_fb" PRIMARY KEY, btree (id)
+    "uk_dykn684sl8up1crfei6eckhd7" UNIQUE CONSTRAINT, btree (realm_id, email_constraint)
+    "uk_ru8tt6t700s9v50bu18ws5ha6" UNIQUE CONSTRAINT, btree (realm_id, username)
+    "idx_user_email" btree (email)
+    "idx_user_service_account" btree (realm_id, service_account_client_link)
+Referenced by:
+    TABLE "federated_identity" CONSTRAINT "fk404288b92ef007a6" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+    TABLE "user_attribute" CONSTRAINT "fk_5hrm2vlf9ql5fu043kqepovbr" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+    TABLE "user_required_action" CONSTRAINT "fk_6qj3w1jw9cvafhe19bwsiuvmd" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+    TABLE "user_role_mapping" CONSTRAINT "fk_c4fqv34p1mbylloxang7b1q3l" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+    TABLE "user_consent" CONSTRAINT "fk_grntcsnt_user" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+    TABLE "credential" CONSTRAINT "fk_pfyr0glasqyl0dei3kl69r6v0" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+    TABLE "user_group_membership" CONSTRAINT "fk_user_group_user" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+
+                         Table "public.user_federation_config"
+           Column            |          Type          | Collation | Nullable | Default 
+-----------------------------+------------------------+-----------+----------+---------
+ user_federation_provider_id | character varying(36)  |           | not null | 
+ value                       | character varying(255) |           |          | 
+ name                        | character varying(255) |           | not null | 
+Indexes:
+    "constraint_f9" PRIMARY KEY, btree (user_federation_provider_id, name)
+Foreign-key constraints:
+    "fk_t13hpu1j94r2ebpekr39x5eu5" FOREIGN KEY (user_federation_provider_id) REFERENCES user_federation_provider(id)
+
+                      Table "public.user_federation_mapper"
+         Column         |          Type          | Collation | Nullable | Default 
+------------------------+------------------------+-----------+----------+---------
+ id                     | character varying(36)  |           | not null | 
+ name                   | character varying(255) |           | not null | 
+ federation_provider_id | character varying(36)  |           | not null | 
+ federation_mapper_type | character varying(255) |           | not null | 
+ realm_id               | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_fedmapperpm" PRIMARY KEY, btree (id)
+    "idx_usr_fed_map_fed_prv" btree (federation_provider_id)
+    "idx_usr_fed_map_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_fedmapperpm_fedprv" FOREIGN KEY (federation_provider_id) REFERENCES user_federation_provider(id)
+    "fk_fedmapperpm_realm" FOREIGN KEY (realm_id) REFERENCES realm(id)
+Referenced by:
+    TABLE "user_federation_mapper_config" CONSTRAINT "fk_fedmapper_cfg" FOREIGN KEY (user_federation_mapper_id) REFERENCES user_federation_mapper(id)
+
+                    Table "public.user_federation_mapper_config"
+          Column           |          Type          | Collation | Nullable | Default 
+---------------------------+------------------------+-----------+----------+---------
+ user_federation_mapper_id | character varying(36)  |           | not null | 
+ value                     | character varying(255) |           |          | 
+ name                      | character varying(255) |           | not null | 
+Indexes:
+    "constraint_fedmapper_cfg_pm" PRIMARY KEY, btree (user_federation_mapper_id, name)
+Foreign-key constraints:
+    "fk_fedmapper_cfg" FOREIGN KEY (user_federation_mapper_id) REFERENCES user_federation_mapper(id)
+
+                    Table "public.user_federation_provider"
+       Column        |          Type          | Collation | Nullable | Default 
+---------------------+------------------------+-----------+----------+---------
+ id                  | character varying(36)  |           | not null | 
+ changed_sync_period | integer                |           |          | 
+ display_name        | character varying(255) |           |          | 
+ full_sync_period    | integer                |           |          | 
+ last_sync           | integer                |           |          | 
+ priority            | integer                |           |          | 
+ provider_name       | character varying(255) |           |          | 
+ realm_id            | character varying(36)  |           |          | 
+Indexes:
+    "constraint_5c" PRIMARY KEY, btree (id)
+    "idx_usr_fed_prv_realm" btree (realm_id)
+Foreign-key constraints:
+    "fk_1fj32f6ptolw2qy60cd8n01e8" FOREIGN KEY (realm_id) REFERENCES realm(id)
+Referenced by:
+    TABLE "user_federation_mapper" CONSTRAINT "fk_fedmapperpm_fedprv" FOREIGN KEY (federation_provider_id) REFERENCES user_federation_provider(id)
+    TABLE "user_federation_config" CONSTRAINT "fk_t13hpu1j94r2ebpekr39x5eu5" FOREIGN KEY (user_federation_provider_id) REFERENCES user_federation_provider(id)
+
+               Table "public.user_group_membership"
+  Column  |         Type          | Collation | Nullable | Default 
+----------+-----------------------+-----------+----------+---------
+ group_id | character varying(36) |           | not null | 
+ user_id  | character varying(36) |           | not null | 
+Indexes:
+    "constraint_user_group" PRIMARY KEY, btree (group_id, user_id)
+    "idx_user_group_mapping" btree (user_id)
+Foreign-key constraints:
+    "fk_user_group_user" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+
+                           Table "public.user_required_action"
+     Column      |          Type          | Collation | Nullable |        Default         
+-----------------+------------------------+-----------+----------+------------------------
+ user_id         | character varying(36)  |           | not null | 
+ required_action | character varying(255) |           | not null | ' '::character varying
+Indexes:
+    "constraint_required_action" PRIMARY KEY, btree (required_action, user_id)
+    "idx_user_reqactions" btree (user_id)
+Foreign-key constraints:
+    "fk_6qj3w1jw9cvafhe19bwsiuvmd" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+
+                 Table "public.user_role_mapping"
+ Column  |          Type          | Collation | Nullable | Default 
+---------+------------------------+-----------+----------+---------
+ role_id | character varying(255) |           | not null | 
+ user_id | character varying(36)  |           | not null | 
+Indexes:
+    "constraint_c" PRIMARY KEY, btree (role_id, user_id)
+    "idx_user_role_mapping" btree (user_id)
+Foreign-key constraints:
+    "fk_c4fqv34p1mbylloxang7b1q3l" FOREIGN KEY (user_id) REFERENCES user_entity(id)
+
+                          Table "public.user_session"
+        Column        |          Type          | Collation | Nullable | Default 
+----------------------+------------------------+-----------+----------+---------
+ id                   | character varying(36)  |           | not null | 
+ auth_method          | character varying(255) |           |          | 
+ ip_address           | character varying(255) |           |          | 
+ last_session_refresh | integer                |           |          | 
+ login_username       | character varying(255) |           |          | 
+ realm_id             | character varying(255) |           |          | 
+ remember_me          | boolean                |           | not null | false
+ started              | integer                |           |          | 
+ user_id              | character varying(255) |           |          | 
+ user_session_state   | integer                |           |          | 
+ broker_session_id    | character varying(255) |           |          | 
+ broker_user_id       | character varying(255) |           |          | 
+Indexes:
+    "constraint_57" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "user_session_note" CONSTRAINT "fk5edfb00ff51d3472" FOREIGN KEY (user_session) REFERENCES user_session(id)
+    TABLE "client_session" CONSTRAINT "fk_b4ao2vcvat6ukau74wbwtfqo1" FOREIGN KEY (session_id) REFERENCES user_session(id)
+
+                    Table "public.user_session_note"
+    Column    |          Type           | Collation | Nullable | Default 
+--------------+-------------------------+-----------+----------+---------
+ user_session | character varying(36)   |           | not null | 
+ name         | character varying(255)  |           | not null | 
+ value        | character varying(2048) |           |          | 
+Indexes:
+    "constraint_usn_pk" PRIMARY KEY, btree (user_session, name)
+Foreign-key constraints:
+    "fk5edfb00ff51d3472" FOREIGN KEY (user_session) REFERENCES user_session(id)
+
+                       Table "public.username_login_failure"
+         Column          |          Type          | Collation | Nullable | Default 
+-------------------------+------------------------+-----------+----------+---------
+ realm_id                | character varying(36)  |           | not null | 
+ username                | character varying(255) |           | not null | 
+ failed_login_not_before | integer                |           |          | 
+ last_failure            | bigint                 |           |          | 
+ last_ip_failure         | character varying(255) |           |          | 
+ num_failures            | integer                |           |          | 
+Indexes:
+    "CONSTRAINT_17-2" PRIMARY KEY, btree (realm_id, username)
+
+                     Table "public.web_origins"
+  Column   |          Type          | Collation | Nullable | Default 
+-----------+------------------------+-----------+----------+---------
+ client_id | character varying(36)  |           | not null | 
+ value     | character varying(255) |           | not null | 
+Indexes:
+    "constraint_web_origins" PRIMARY KEY, btree (client_id, value)
+    "idx_web_orig_client" btree (client_id)
+Foreign-key constraints:
+    "fk_lojpho213xcx4wnkog82ssrfy" FOREIGN KEY (client_id) REFERENCES client(id)
+
